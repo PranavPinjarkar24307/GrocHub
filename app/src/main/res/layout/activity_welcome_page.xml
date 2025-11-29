@@ -2,12 +2,14 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layout_welcome_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/backgroundgreenelement"
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/layout_content_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -15,14 +17,14 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/layout_logo_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="80dp"
-            android:background="@drawable/applogowithname"></LinearLayout>
-
+            android:background="@drawable/applogowithname" />
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/rhk7z7ao5wob"
+            android:id="@+id/img_welcome_illustration"
             android:layout_width="272dp"
             android:layout_height="239dp"
             android:layout_marginTop="50dp"
@@ -32,7 +34,7 @@
             app:shapeAppearanceOverlay="@style/cr30" />
 
         <LinearLayout
-            android:id="@+id/rlk57n23g91e"
+            android:id="@+id/btn_login_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -46,7 +48,7 @@
             android:paddingVertical="16dp">
 
             <TextView
-                android:id="@+id/rpnrs62teuzf"
+                android:id="@+id/tv_login_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Login"
@@ -56,7 +58,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/rwb6g0de0a7"
+            android:id="@+id/btn_register_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -69,7 +71,7 @@
             android:paddingVertical="16dp">
 
             <TextView
-                android:id="@+id/rkqiok3x2h7g"
+                android:id="@+id/tv_register_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Register"
@@ -79,7 +81,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/r1gn61nubul3"
+            android:id="@+id/layout_or_login_with"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -88,16 +90,16 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:id="@+id/rg93d9wjew7j"
+                android:id="@+id/line_left"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_marginEnd="11dp"
                 android:layout_weight="1"
                 android:background="#828282"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical" />
 
             <LinearLayout
-                android:id="@+id/rmngrragjisg"
+                android:id="@+id/layout_or_text_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
@@ -105,7 +107,7 @@
                 android:paddingBottom="1dp">
 
                 <TextView
-                    android:id="@+id/rxsniyvgliy"
+                    android:id="@+id/tv_or_login_with"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Or login with"
@@ -114,16 +116,16 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/rb51v6sy5fy4"
+                android:id="@+id/line_right"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1"
                 android:background="#828282"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical" />
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/rltcgak4gwj"
+            android:id="@+id/btn_social_google"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -134,31 +136,11 @@
             android:paddingVertical="10dp">
 
             <TextView
-                android:id="@+id/r1p1hbe186zd"
+                android:id="@+id/tv_social_google"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Google"
                 android:textColor="#4F4F4F"
-                android:textSize="14sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/r5sac3nz4x8c"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginBottom="42dp"
-            android:background="@drawable/cr10b2d9cdb"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:paddingVertical="10dp">
-
-            <TextView
-                android:id="@+id/rwq2kb792a4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Facebook"
-                android:textColor="#FFFFFF"
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>

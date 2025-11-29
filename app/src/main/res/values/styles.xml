@@ -3,4 +3,9 @@
 	<style name="cr30">
 		<item name="cornerSize">30dp</item>
 	</style>
+
+    <style name="CustomBottomNavIndicatorStyle" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/Primary</item>
+
+    </style>
 </resources>

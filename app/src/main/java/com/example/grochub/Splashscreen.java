@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.widget.VideoView;
 import androidx.appcompat.app.AppCompatActivity;
 
+
 public class Splashscreen extends AppCompatActivity {
 
     @Override

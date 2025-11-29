@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GrocHub">
         <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".RegisterPagePassword"
             android:exported="false" />
         <activity
