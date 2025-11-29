@@ -8,9 +8,15 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@drawable/app_logo"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/applogowithname"
+        android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.GrocHub">
+        <activity
+            android:name=".RegisterPagePassword"
+            android:exported="false" />
+        <activity
+            android:name=".Registerpage"
+            android:exported="false" />
         <activity
             android:name=".Loginpage"
             android:exported="false" />
