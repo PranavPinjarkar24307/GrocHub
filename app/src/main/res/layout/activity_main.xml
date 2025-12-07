@@ -26,6 +26,7 @@
         app:menu="@menu/bottom_menu"
         app:backgroundTint="@android:color/white"
         app:itemTextColor="@color/black"
+        app:itemIconTint="@color/black"
         app:itemActiveIndicatorStyle="@style/CustomBottomNavIndicatorStyle"
         />
 

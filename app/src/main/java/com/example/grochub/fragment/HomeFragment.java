@@ -89,6 +89,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        sliderHandler.postDelayed(sliderRunnable, 3000);
+        sliderHandler.postDelayed(sliderRunnable, 8000);
     }
 }
