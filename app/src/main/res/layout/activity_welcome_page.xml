@@ -22,7 +22,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="80dp"
-            android:background="@drawable/applogowithname" />
+            android:background="@drawable/applogowithname"
+            android:orientation="vertical" />
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/img_welcome_illustration"
             android:layout_width="272dp"

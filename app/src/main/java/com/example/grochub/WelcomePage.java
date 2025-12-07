@@ -41,8 +41,6 @@ public class WelcomePage extends AppCompatActivity {
         loginButtonContainer = findViewById(R.id.btn_login_container);
         registerButtonContainer = findViewById(R.id.btn_register_container);
         googleButton = findViewById(R.id.btn_social_google);
-        facebookButton = findViewById(R.id.btn_social_facebook);
-
         // Note: The image view, TextViews, and purely cosmetic layouts usually don't need
         // an explicit variable here unless you plan to modify their content/appearance dynamically.
     }
@@ -77,15 +75,6 @@ public class WelcomePage extends AppCompatActivity {
             public void onClick(View v) {
                 // In a real app, you would initiate Google Sign-In flow
                 Toast.makeText(WelcomePage.this, "Starting Google Sign-In process...", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        // Click listener for Facebook social login
-        facebookButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // In a real app, you would initiate Facebook Login flow
-                Toast.makeText(WelcomePage.this, "Starting Facebook Login process...", Toast.LENGTH_SHORT).show();
             }
         });
     }

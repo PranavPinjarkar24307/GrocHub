@@ -11,22 +11,25 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.grochub.HomeSliderAdapter;
+import com.example.grochub.adapter.HomeSliderAdapter;
 import com.example.grochub.R;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 public class HomeFragment extends Fragment {
 
     private ViewPager2 homeSlider;
+    private TabLayout homeSliderIndicator;
     private Handler sliderHandler = new Handler();
 
-    // Use a drawable that actually exists (PNG/JPG in res/drawable)
+    // Slider Images
     private int[] sliderImages = {
             R.drawable.slider,
             R.drawable.slider,
             R.drawable.slider
     };
 
-    public HomeFragment() { }
+    public HomeFragment() {}
 
     @Nullable
     @Override
@@ -37,9 +40,20 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         homeSlider = view.findViewById(R.id.homeSlider);
+        homeSliderIndicator = view.findViewById(R.id.homeSliderIndicator);
 
+        // Set adapter
         HomeSliderAdapter adapter = new HomeSliderAdapter(sliderImages);
         homeSlider.setAdapter(adapter);
+
+        // Attach TabLayout Indicator
+        new TabLayoutMediator(homeSliderIndicator, homeSlider,
+                new TabLayoutMediator.TabConfigurationStrategy() {
+                    @Override
+                    public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                        tab.setCustomView(R.layout.tab_dot);
+                    }
+                }).attach();
 
         homeSlider.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
