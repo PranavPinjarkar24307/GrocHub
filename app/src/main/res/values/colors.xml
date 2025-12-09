@@ -13,6 +13,8 @@
     <color name="pink">#FFE91E63</color>
     <color name="brown">#FF795548</color>
     <color name="gray">#FF9E9E9E</color>
+    <color name="light_gray">#FFBDBDBD</color>
+    <color name="more_light_gray">#FFE0E0E0</color>
 
     <!-- Brand / App Colors -->
     <color name="Primary">#4CAD73</color>

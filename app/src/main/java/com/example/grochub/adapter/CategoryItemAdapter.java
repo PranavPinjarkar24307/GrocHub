@@ -1,0 +1,57 @@
+package com.example.grochub.adapter;
+
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.grochub.R;
+import com.example.grochub.model.CategoryItem;
+
+import java.util.List;
+
+public class CategoryItemAdapter extends RecyclerView.Adapter<CategoryItemAdapter.ItemViewHolder> {
+
+    private List<CategoryItem> items;
+
+    public CategoryItemAdapter(List<CategoryItem> items) {
+        this.items = items;
+    }
+
+    @NonNull
+    @Override
+    public ItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_product_small, parent, false); // reuse earlier card layout
+        return new ItemViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
+        CategoryItem item = items.get(position);
+        holder.ivImage.setImageResource(item.getImageResId());
+        holder.tvName.setText(item.getName());
+        holder.tvPrice.setText(item.getPrice());
+    }
+
+    @Override
+    public int getItemCount() {
+        return items.size();
+    }
+
+    static class ItemViewHolder extends RecyclerView.ViewHolder {
+        ImageView ivImage;
+        TextView tvName, tvPrice;
+
+        public ItemViewHolder(@NonNull View itemView) {
+            super(itemView);
+            ivImage = itemView.findViewById(R.id.iv_product_image);
+            tvName = itemView.findViewById(R.id.tv_product_name);
+            tvPrice = itemView.findViewById(R.id.tv_product_price);
+        }
+    }
+}

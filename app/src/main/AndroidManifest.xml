@@ -12,8 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GrocHub">
         <activity
-            android:name=".MainActivity"
+            android:name=".Categories"
             android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".RegisterPagePassword"
             android:exported="false" />

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import com.example.grochub.fragment.HomeFragment;
 import com.example.grochub.fragment.CartFragment;
 import com.example.grochub.fragment.ProfileFragment;
+import com.example.grochub.fragment.WishlistFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
                 fragment = new HomeFragment();
             } else if (id == R.id.menu_cart) {
                 fragment = new CartFragment();
+            } else if (id == R.id.menu_wishlist) {
+                fragment = new WishlistFragment();
             } else if (id == R.id.menu_profile) {
                 fragment = new ProfileFragment();
             }

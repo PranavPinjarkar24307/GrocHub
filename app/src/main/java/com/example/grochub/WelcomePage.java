@@ -54,7 +54,6 @@ public class WelcomePage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // In a real app, you would start a LoginActivity here
-                Toast.makeText(WelcomePage.this, "Navigating to Login Screen...", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(WelcomePage.this, MainActivity.class);
                 startActivity(intent);
             }
