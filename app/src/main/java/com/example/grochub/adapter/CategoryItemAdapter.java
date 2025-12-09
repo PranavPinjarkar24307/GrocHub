@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.grochub.R;
 import com.example.grochub.model.CategoryItem;
 
@@ -33,7 +34,11 @@ public class CategoryItemAdapter extends RecyclerView.Adapter<CategoryItemAdapte
     @Override
     public void onBindViewHolder(@NonNull ItemViewHolder holder, int position) {
         CategoryItem item = items.get(position);
-        holder.ivImage.setImageResource(item.getImageResId());
+        Glide.with(holder.itemView.getContext())
+                .load(item.getImageResId())
+                .override(300, 300)
+                .centerCrop()
+                .into(holder.ivImage);
         holder.tvName.setText(item.getName());
         holder.tvPrice.setText(item.getPrice());
     }

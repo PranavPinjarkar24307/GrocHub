@@ -18,13 +18,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);   // ✅ Important
+        setContentView(R.layout.activity_main);
 
         bottomNav = findViewById(R.id.bottomNav);
 
-        // Load HomeFragment by default
-        loadFragment(new HomeFragment());
-
+        // 1️⃣ FIRST: set listener
         bottomNav.setOnItemSelectedListener(item -> {
             Fragment fragment = null;
 
@@ -42,10 +40,22 @@ public class MainActivity extends AppCompatActivity {
             loadFragment(fragment);
             return true;
         });
+
+        // 2️⃣ THEN: decide which tab to open (ONLY when activity created first time)
+        if (savedInstanceState == null) {
+            boolean openCart = getIntent().getBooleanExtra("open_cart", false);
+
+            if (openCart) {
+                bottomNav.setSelectedItemId(R.id.menu_cart);   // this will trigger listener → CartFragment
+            } else {
+                bottomNav.setSelectedItemId(R.id.menu_home);   // this will trigger listener → HomeFragment
+            }
+        }
     }
 
     private void loadFragment(Fragment fragment) {
         if (fragment == null) return;
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fragmentContainer, fragment)

@@ -55,6 +55,8 @@ public class CategoryListFragment extends Fragment {
         rvItems = view.findViewById(R.id.rv_category_items);
 
         rvItems.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        rvItems.setHasFixedSize(true);
+        rvItems.setNestedScrollingEnabled(false);
         adapter = new CategoryItemAdapter(itemList);
         rvItems.setAdapter(adapter);
 
@@ -67,13 +69,23 @@ public class CategoryListFragment extends Fragment {
         itemList.clear();
 
         if ("VEGETABLES".equals(categoryId)) {
-            itemList.add(new CategoryItem(R.drawable.slider, "Tomato", "₹40 / kg"));
-            itemList.add(new CategoryItem(R.drawable.slider, "Potato", "₹30 / kg"));
-            itemList.add(new CategoryItem(R.drawable.slider, "Onion", "₹35 / kg"));
+            itemList.add(new CategoryItem(R.drawable.tomatoes, "Tomato", "₹40 / kg"));
+            itemList.add(new CategoryItem(R.drawable.potato, "Potato", "₹30 / kg"));
+            itemList.add(new CategoryItem(R.drawable.onion, "Onion", "₹35 / kg"));
+            itemList.add(new CategoryItem(R.drawable.pumpkins, "Pumpkin", "₹30 / kg"));
+            itemList.add(new CategoryItem(R.drawable.ginger, "Ginger", "₹80 / kg"));
+            itemList.add(new CategoryItem(R.drawable.cauliflower, "Cauliflower", "₹25 / piece"));
+            itemList.add(new CategoryItem(R.drawable.cabbage, "Cabbage", "₹20 / piece"));
+            itemList.add(new CategoryItem(R.drawable.carrot, "Carrot", "₹45 / kg"));
+            itemList.add(new CategoryItem(R.drawable.peppers, "Peppers", "₹50 / kg"));
         } else if ("FRUITS".equals(categoryId)) {
-            itemList.add(new CategoryItem(R.drawable.slider, "Apple", "₹120 / kg"));
-            itemList.add(new CategoryItem(R.drawable.slider, "Banana", "₹50 / dozen"));
-            itemList.add(new CategoryItem(R.drawable.slider, "Orange", "₹80 / kg"));
+            itemList.add(new CategoryItem(R.drawable.apple, "Apple", "₹120 / kg"));
+            itemList.add(new CategoryItem(R.drawable.banana, "Banana", "₹50 / dozen"));
+            itemList.add(new CategoryItem(R.drawable.oranges, "Orange", "₹80 / kg"));
+            itemList.add(new CategoryItem(R.drawable.graps, "Grapes", "₹70 / kg"));
+            itemList.add(new CategoryItem(R.drawable.mango, "Mango", "₹100 / kg"));
+            itemList.add(new CategoryItem(R.drawable.strawberry, "Strawberry", "₹150 / box"));
+            itemList.add(new CategoryItem(R.drawable.pineapple, "Pineapple", "₹60 / piece"));
         } else if ("MEAT_EGGS".equals(categoryId)) {
             itemList.add(new CategoryItem(R.drawable.slider, "Chicken", "₹220 / kg"));
             itemList.add(new CategoryItem(R.drawable.slider, "Eggs (12)", "₹70"));

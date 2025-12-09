@@ -34,4 +34,7 @@
     <color name="error">#F44336</color>
     <color name="info">#2196F3</color>
 
+    <color name="category_selected">#34C759</color>
+
+
 </resources>

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<style name="RoundedImageShape">
+		<item name="cornerFamily">rounded</item>
+		<item name="cornerSize">8dp</item>
+	</style>
 	<style name="cr30">
 		<item name="cornerSize">30dp</item>
 	</style>
