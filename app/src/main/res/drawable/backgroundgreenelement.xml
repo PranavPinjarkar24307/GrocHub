@@ -6,9 +6,9 @@
     <group>
         <path
             android:fillColor="#FFFFFFFF"
-            android:pathData="M0 30c0-16.57 13.43-30 30-30h315c16.57 0 30 13.43 30 30v752c0 16.57-13.43 30-30 30h-315c-16.57 0-30-13.43-30-30z"/>
+            android:pathData="M0 0H375V812H0z"/>
         <path
-            android:fillColor="#FF53B97C"
-            android:pathData="M140-112A298 244.5 0 1 0 140 377 298 244.5 0 1 0 140-112z"/>
+            android:fillColor="#FF4CAD73"
+            android:pathData="M206.5-303A458.5 190 0 1 0 206.5 77 458.5 190 0 1 0 206.5-303z"/>
     </group>
 </vector>

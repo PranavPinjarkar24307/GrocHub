@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.HomeFragment"
-    android:background="@drawable/homepagebackground">
+    >
 
     <LinearLayout
         android:id="@+id/ll_home_content_container"
@@ -17,7 +17,9 @@
             android:id="@+id/ll_header_area"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@color/Primary"
+            >
 
             <ImageView
                 android:id="@+id/iv_app_logo"
@@ -77,7 +79,7 @@
                 android:id="@+id/ll_delivery_location_row"
                 android:layout_width="match_parent"
                 android:layout_height="16dp"
-                android:layout_marginBottom="25dp"
+                android:layout_marginBottom="15dp"
                 android:layout_marginHorizontal="25dp"
                 android:orientation="horizontal"
                 android:layout_gravity="center_horizontal">
@@ -138,18 +140,21 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:background="@drawable/backgroundgreenelement">
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/homeSlider"
                 android:layout_width="match_parent"
                 android:layout_height="180dp"
                 android:background="@android:color/transparent"
-                android:clipToPadding="false" />
+                android:clipToPadding="false"
+                android:layout_marginTop="15dp"/>
 
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/homeSliderIndicator"
