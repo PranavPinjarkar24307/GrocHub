@@ -3,9 +3,19 @@ package com.example.grochub;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
+import com.example.grochub.model.CartFirebaseModel;
+import com.example.grochub.model.CartItem;
+import com.example.grochub.util.CartManager;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FieldValue;
+
 
 public class ProductDetailActivity extends AppCompatActivity {
 
@@ -18,6 +28,9 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private int quantity = 1;
     private boolean inWishlist = false;
+
+    private TextView btnAddToCart;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,17 +48,62 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnQtyMinus = findViewById(R.id.btn_qty_minus);
         btnQtyPlus = findViewById(R.id.btn_qty_plus);
 
-        // get data from Intent
+        btnAddToCart = findViewById(R.id.btn_add_to_cart);
+
+
+        // ✅ GET DATA CORRECTLY
         String name = getIntent().getStringExtra(EXTRA_NAME);
         String price = getIntent().getStringExtra(EXTRA_PRICE);
-        int imageRes = getIntent().getIntExtra(EXTRA_IMAGE, 0);
+        String imageUrl = getIntent().getStringExtra(ProductDetailActivity.EXTRA_IMAGE);
 
         if (name != null) tvName.setText(name);
         if (price != null) tvPrice.setText(price);
-        if (imageRes != 0) ivProductImage.setImageResource(imageRes);
 
-        // description: later you can pass real description
-        tvDescription.setText("Fresh and high-quality " + name + " delivered to your doorstep.");
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.gray_colour)
+                    .into(ivProductImage);
+        }
+
+        btnAddToCart.setOnClickListener(v -> {
+
+            // ---------- LOCAL CART (already working) ----------
+            CartItem cartItem = new CartItem(
+                    tvName.getText().toString(),
+                    tvPrice.getText().toString(),
+                    imageUrl,
+                    quantity
+            );
+
+            CartManager.addToCart(this, cartItem);
+
+            // ---------- FIREBASE CART (NEW) ----------
+            String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+            // using product name as ID (safe for now)
+            String productId = tvName.getText().toString();
+
+            db.collection("users")
+                    .document(uid)
+                    .collection("cart")
+                    .document(productId)
+                    .set(new CartFirebaseModel(
+                            tvName.getText().toString(),
+                            tvPrice.getText().toString(),
+                            imageUrl,
+                            quantity
+                    ));
+
+            Toast.makeText(this, "Added to cart", Toast.LENGTH_SHORT).show();
+        });
+
+
+        tvDescription.setText(
+                "Fresh and high-quality " + name + " delivered to your doorstep."
+        );
 
         ivBack.setOnClickListener(v -> onBackPressed());
 
@@ -54,7 +112,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             ivWishlist.setImageResource(
                     inWishlist ? R.drawable.hearticon : R.drawable.wishlisticon
             );
-            // later: add / remove from wishlist database here
         });
 
         btnQtyMinus.setOnClickListener(v -> {
@@ -67,15 +124,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnQtyPlus.setOnClickListener(v -> {
             quantity++;
             tvQty.setText(String.valueOf(quantity));
-        });
-
-        // TODO: Add real logic for Add to Cart / Buy Now
-        findViewById(R.id.btn_add_to_cart).setOnClickListener(v -> {
-            // later: add product with [name, price, imageRes, quantity] to Cart DB / Singleton
-        });
-
-        findViewById(R.id.btn_buy_now).setOnClickListener(v -> {
-            // later: go to checkout screen directly
         });
     }
 }

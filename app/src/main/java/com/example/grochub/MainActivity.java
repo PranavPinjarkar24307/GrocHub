@@ -5,15 +5,16 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.grochub.fragment.HomeFragment;
 import com.example.grochub.fragment.CartFragment;
+import com.example.grochub.fragment.HomeFragment;
 import com.example.grochub.fragment.ProfileFragment;
 import com.example.grochub.fragment.WishlistFragment;
+import com.example.grochub.fragment.OrderHistoryFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    BottomNavigationView bottomNav;
+    private BottomNavigationView bottomNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,43 +23,66 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottomNav);
 
-        // 1️⃣ FIRST: set listener
+        // =============================
+        // Bottom Navigation Listener
+        // =============================
         bottomNav.setOnItemSelectedListener(item -> {
-            Fragment fragment = null;
 
+            Fragment fragment = null;
             int id = item.getItemId();
+
             if (id == R.id.menu_home) {
                 fragment = new HomeFragment();
+
             } else if (id == R.id.menu_cart) {
                 fragment = new CartFragment();
+
             } else if (id == R.id.menu_wishlist) {
                 fragment = new WishlistFragment();
+
             } else if (id == R.id.menu_profile) {
                 fragment = new ProfileFragment();
             }
 
-            loadFragment(fragment);
+            if (fragment != null) {
+                loadFragment(fragment);
+            }
+
             return true;
         });
 
-        // 2️⃣ THEN: decide which tab to open (ONLY when activity created first time)
+        // =============================
+        // Default screen on app start
+        // =============================
         if (savedInstanceState == null) {
             boolean openCart = getIntent().getBooleanExtra("open_cart", false);
 
             if (openCart) {
-                bottomNav.setSelectedItemId(R.id.menu_cart);   // this will trigger listener → CartFragment
+                bottomNav.setSelectedItemId(R.id.menu_cart);
             } else {
-                bottomNav.setSelectedItemId(R.id.menu_home);   // this will trigger listener → HomeFragment
+                bottomNav.setSelectedItemId(R.id.menu_home);
             }
         }
     }
 
+    // =============================
+    // Load BottomNav Fragments ONLY
+    // =============================
     private void loadFragment(Fragment fragment) {
-        if (fragment == null) return;
-
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fragmentContainer, fragment)
+                .replace(R.id.main_container, fragment)
+                .commit();
+    }
+
+    // ==================================================
+    // 🔥 IMPORTANT: Open Order History (Secondary Screen)
+    // ==================================================
+    public void openOrderHistory() {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.main_container, new OrderHistoryFragment())
+                .addToBackStack("order_history")
                 .commit();
     }
 }

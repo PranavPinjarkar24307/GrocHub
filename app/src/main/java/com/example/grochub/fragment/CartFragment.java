@@ -1,66 +1,174 @@
 package com.example.grochub.fragment;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.grochub.R;
+import com.example.grochub.adapter.CartAdapter;
+import com.example.grochub.model.CartFirebaseModel;
+import com.example.grochub.model.OrderModel;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CartFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class CartFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private RecyclerView rvCartItems;
+    private TextView tvTotalPrice;
+    private View btnCheckout;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private CartAdapter adapter;
+    private final List<CartFirebaseModel> cartList = new ArrayList<>();
 
-    public CartFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CartFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CartFragment newInstance(String param1, String param2) {
-        CartFragment fragment = new CartFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState
+    ) {
+        View view = inflater.inflate(R.layout.fragment_cart, container, false);
+
+        rvCartItems = view.findViewById(R.id.rv_cart_items);
+        tvTotalPrice = view.findViewById(R.id.tv_total_price);
+        btnCheckout = view.findViewById(R.id.btn_checkout);
+
+        rvCartItems.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        adapter = new CartAdapter(cartList);
+        rvCartItems.setAdapter(adapter);
+
+        loadCartFromFirebase();
+
+        btnCheckout.setOnClickListener(v -> {
+            if (cartList.isEmpty()) {
+                Toast.makeText(getContext(), "Cart is empty", Toast.LENGTH_SHORT).show();
+            } else {
+                checkoutOrder();
+            }
+        });
+
+        return view;
+    }
+
+    // ================================
+    // LOAD CART FROM FIREBASE
+    // ================================
+    private void loadCartFromFirebase() {
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .collection("cart")
+                .addSnapshotListener((value, error) -> {
+
+                    if (error != null || value == null) return;
+
+                    cartList.clear();
+                    int total = 0;
+
+                    for (var doc : value.getDocuments()) {
+
+                        CartFirebaseModel item = doc.toObject(CartFirebaseModel.class);
+                        if (item == null) continue;
+
+                        cartList.add(item);
+
+                        String priceStr = item.price
+                                .replace("₹", "")
+                                .split("/")[0]
+                                .trim();
+
+                        int price = Integer.parseInt(priceStr);
+                        total += price * item.quantity;
+                    }
+
+                    tvTotalPrice.setText("₹" + total);
+                    adapter.notifyDataSetChanged();
+                });
+    }
+
+    // ================================
+    // CHECKOUT → CREATE ORDER
+    // ================================
+    private void checkoutOrder() {
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        String orderId = "order_" + System.currentTimeMillis();
+
+        OrderModel order = new OrderModel(
+                new ArrayList<>(cartList),
+                calculateTotal(cartList),
+                FieldValue.serverTimestamp()
+        );
+
+        db.collection("users")
+                .document(uid)
+                .collection("orders")
+                .document(orderId)
+                .set(order)
+                .addOnSuccessListener(unused -> {
+                    clearFirebaseCart();
+                    Toast.makeText(getContext(), "Order placed successfully", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Order failed", Toast.LENGTH_SHORT).show()
+                );
+    }
+
+    // ================================
+    // CALCULATE TOTAL
+    // ================================
+    private int calculateTotal(List<CartFirebaseModel> items) {
+
+        int total = 0;
+
+        for (CartFirebaseModel item : items) {
+            String priceStr = item.price
+                    .replace("₹", "")
+                    .split("/")[0]
+                    .trim();
+
+            int price = Integer.parseInt(priceStr);
+            total += price * item.quantity;
         }
+
+        return total;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_cart, container, false);
+    // ================================
+    // CLEAR CART AFTER ORDER
+    // ================================
+    private void clearFirebaseCart() {
+
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users")
+                .document(uid)
+                .collection("cart")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    for (var doc : snapshot.getDocuments()) {
+                        doc.getReference().delete();
+                    }
+                });
     }
 }

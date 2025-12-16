@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.grochub.Categories;
+import com.example.grochub.ProductDetailActivity;
 import com.example.grochub.R;
 import com.example.grochub.model.CategoryItem;
 
@@ -39,26 +40,35 @@ public class CategoryItemAdapter extends RecyclerView.Adapter<CategoryItemAdapte
 
         CategoryItem item = items.get(position);
 
+        holder.tvName.setText(item.getName());
+        holder.tvPrice.setText(item.getPrice());
+
         Glide.with(holder.itemView.getContext())
-                .load(item.getImage())
+                .load(item.getImage())        // URL
                 .placeholder(R.drawable.gray_colour)
                 .error(R.drawable.gray_colour)
                 .into(holder.ivImage);
 
-        holder.tvName.setText(item.getName());
-        holder.tvPrice.setText(item.getPrice());
-
-        // ✅ CATEGORY CLICK → OPEN CATEGORY PRODUCTS
+        // ✅ PRODUCT CLICK → OPEN PRODUCT DETAIL
         holder.itemView.setOnClickListener(v -> {
 
-            Context context = v.getContext();
+            int pos = holder.getBindingAdapterPosition();
+            if (pos == RecyclerView.NO_POSITION) return;
 
-            Intent intent = new Intent(context, Categories.class);
-            intent.putExtra("categoryId", item.getCategoryId());
-            intent.putExtra("categoryName", item.getName());
-            context.startActivity(intent);
+            CategoryItem clickedItem = items.get(pos);
+
+            Context ctx = v.getContext();
+            Intent intent = new Intent(ctx, ProductDetailActivity.class);
+
+            intent.putExtra(ProductDetailActivity.EXTRA_NAME, clickedItem.getName());
+            intent.putExtra(ProductDetailActivity.EXTRA_PRICE, clickedItem.getPrice());
+            intent.putExtra(ProductDetailActivity.EXTRA_IMAGE, clickedItem.getImage());
+
+            ctx.startActivity(intent);
         });
+
     }
+
 
     @Override
     public int getItemCount() {

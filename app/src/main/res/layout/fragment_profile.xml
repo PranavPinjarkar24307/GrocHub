@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/Primary"
-    tools:context=".fragment.ProfileFragment"
-    >
+    tools:context=".fragment.ProfileFragment">
 
     <ImageView
         android:id="@+id/some_icon"
@@ -21,8 +20,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="?attr/colorOnPrimary" />
-
-
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/profile_image"
@@ -66,18 +63,18 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="32dp"
+        app:cardCornerRadius="30dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/profile_email"
-        >
+        app:layout_constraintTop_toBottomOf="@id/profile_email">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:padding="21dp"
-            >
+            android:background="@drawable/productdetail_card">
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/address_card"
@@ -88,7 +85,7 @@
                 android:layout_marginTop="8dp"
                 app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
+                app:cardElevation="2dp"
                 app:strokeColor="@color/Primary"
                 app:strokeWidth="1dp">
 
@@ -97,12 +94,45 @@
                     style="@style/Widget.Material3.Button.TextButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:drawableStart="@android:drawable/ic_menu_directions"
                     android:drawablePadding="24dp"
-                    android:drawableTint="?attr/colorPrimary"
+                    android:drawableTint="@color/Primary"
                     android:gravity="center_vertical|start"
                     android:paddingVertical="16dp"
+                    android:paddingStart="16dp"
                     android:text="Address"
-                    android:textAlignment="viewStart"
+                    android:textColor="@color/black"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+            </com.google.android.material.card.MaterialCardView>
+
+
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/order_history_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeColor="@color/Primary"
+                app:strokeWidth="1dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/order_history_button"
+                    style="@style/Widget.Material3.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@android:drawable/ic_menu_recent_history"
+                    android:drawablePadding="24dp"
+                    android:drawableTint="@color/Primary"
+                    android:gravity="center_vertical|start"
+                    android:paddingVertical="16dp"
+                    android:paddingStart="16dp"
+                    android:text="Order History"
+                    android:textColor="@color/black"
                     android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
             </com.google.android.material.card.MaterialCardView>
 

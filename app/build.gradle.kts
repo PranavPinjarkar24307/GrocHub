@@ -43,6 +43,8 @@ dependencies {
     implementation(libs.material.v190)
     implementation(libs.cardview)
     implementation(libs.firebase.firestore)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -57,4 +59,6 @@ dependencies {
 
     // Google Sign-In
     implementation(libs.play.services.auth)
+
+    implementation(libs.gson)
 }

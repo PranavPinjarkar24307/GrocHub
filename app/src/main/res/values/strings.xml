@@ -2,7 +2,7 @@
     <string name="app_name">GroceHub</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-<!--    Google Authentication Web Id-->
+    <!--    Google Authentication Web Id-->
     <string name="default_web_client_id">
         444855478362-4d8nfmht7ub49mvo0v384up4a947vtr3.apps.googleusercontent.com
     </string>
