@@ -1,32 +1,26 @@
 package com.example.grochub.fragment;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.grochub.Categories;
-import com.example.grochub.adapter.HomeSliderAdapter;
 import com.example.grochub.R;
+import com.example.grochub.adapter.HomeSliderAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-
-import androidx.appcompat.widget.SearchView;
-import android.graphics.Color;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 
 
 public class HomeFragment extends Fragment {
@@ -109,7 +103,8 @@ public class HomeFragment extends Fragment {
 
         veg.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), Categories.class);
-            intent.putExtra("category_name", "Vegetables");   // send data if needed
+            intent.putExtra("category_id", "vegetables");
+            intent.putExtra("category_title", "Vegetables");
             startActivity(intent);
         });
 

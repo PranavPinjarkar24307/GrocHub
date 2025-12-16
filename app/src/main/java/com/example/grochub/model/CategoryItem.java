@@ -1,17 +1,36 @@
 package com.example.grochub.model;
 
 public class CategoryItem {
-    private int imageResId;
-    private String name;
-    private String price;
 
-    public CategoryItem(int imageResId, String name, String price) {
-        this.imageResId = imageResId;
+    private String name;
+    private int price;
+    private String unit;
+    private String categoryId;
+    private String image;
+
+    public CategoryItem() {}
+
+    public CategoryItem(String image, String name, int price, String unit, String categoryId) {
+        this.image = image;
         this.name = name;
         this.price = price;
+        this.unit = unit;
+        this.categoryId = categoryId;
     }
 
-    public int getImageResId() { return imageResId; }
-    public String getName() { return name; }
-    public String getPrice() { return price; }
+    public String getName() {
+        return name;
+    }
+
+    public String getPrice() {
+        return "₹" + price + " / " + unit;
+    }
+
+    public String getCategoryId() {
+        return categoryId;
+    }
+
+    public String getImage() {
+        return image;
+    }
 }

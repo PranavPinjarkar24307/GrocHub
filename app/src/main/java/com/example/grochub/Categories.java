@@ -26,8 +26,6 @@ public class Categories extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_categories);
 
-        String categoryName = getIntent().getStringExtra("category_name");
-
         catVegetables = findViewById(R.id.category_vegetables);
         catFruits = findViewById(R.id.category_fruits);
         catMeatEggs = findViewById(R.id.category_meat_eggs);
@@ -74,41 +72,72 @@ public class Categories extends AppCompatActivity {
             searchText.setTextColor(Color.parseColor("#000000"));     // typed text color
         }
 
-        // 1️⃣ FIRST: make ALL tabs look unselected (faded)
+        // 1️⃣ Make all tabs unselected first
         updateTabUi(catVegetables, false);
         updateTabUi(catFruits, false);
         updateTabUi(catMeatEggs, false);
         updateTabUi(catDrinks, false);
         updateTabUi(catBakery, false);
 
-        // 2️⃣ THEN: default = Vegetables selected (bright)
-        openCategory("VEGETABLES");
-        selectCategoryView(catVegetables);
+        String categoryId = getIntent().getStringExtra("category_id");
 
+        if (categoryId == null) {
+            // If opened normally, default = vegetables
+            categoryId = "vegetables";
+        }
+
+// Open based on Home click
+        openCategory(categoryId);
+
+        switch (categoryId) {
+            case "fruits":
+                selectCategoryView(catFruits);
+                break;
+
+            case "meat_eggs":
+                selectCategoryView(catMeatEggs);
+                break;
+
+            case "drinks":
+                selectCategoryView(catDrinks);
+                break;
+
+            case "bakery":
+                selectCategoryView(catBakery);
+                break;
+
+            default:
+                selectCategoryView(catVegetables);
+                break;
+        }
+
+
+// 3️⃣ Click listeners
         catVegetables.setOnClickListener(v -> {
-            openCategory("VEGETABLES");
+            openCategory("vegetables");
             selectCategoryView(v);
         });
 
         catFruits.setOnClickListener(v -> {
-            openCategory("FRUITS");
+            openCategory("fruits");
             selectCategoryView(v);
         });
 
         catMeatEggs.setOnClickListener(v -> {
-            openCategory("MEAT_EGGS");
+            openCategory("meat_eggs");
             selectCategoryView(v);
         });
 
         catDrinks.setOnClickListener(v -> {
-            openCategory("DRINKS");
+            openCategory("drinks");
             selectCategoryView(v);
         });
 
         catBakery.setOnClickListener(v -> {
-            openCategory("BAKERY");
+            openCategory("bakery");
             selectCategoryView(v);
         });
+
     }
 
     private void openCategory(String categoryId) {
