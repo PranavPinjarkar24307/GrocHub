@@ -116,7 +116,8 @@ public class CartFragment extends Fragment {
         OrderModel order = new OrderModel(
                 new ArrayList<>(cartList),
                 calculateTotal(cartList),
-                FieldValue.serverTimestamp()
+                null,            // Firestore timestamp
+                "PROCESSING"     // ✅ order status
         );
 
         db.collection("users")
@@ -171,4 +172,12 @@ public class CartFragment extends Fragment {
                     }
                 });
     }
+
+    OrderModel order = new OrderModel(
+            new ArrayList<>(cartList),
+            calculateTotal(cartList),
+            null,              // Firestore timestamp
+            "PROCESSING"       // ✅ DEFAULT STATUS
+    );
+
 }

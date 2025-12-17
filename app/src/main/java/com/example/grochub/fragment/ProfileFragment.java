@@ -1,18 +1,22 @@
 package com.example.grochub.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.grochub.Loginpage;
 import com.example.grochub.MainActivity;
 import com.example.grochub.R;
+import com.example.grochub.WelcomePage;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -37,13 +41,16 @@ public class ProfileFragment extends Fragment {
         tvName = view.findViewById(R.id.profile_name);
         tvEmail = view.findViewById(R.id.profile_email);
 
-        // 🔥 LOAD PROFILE DATA AGAIN (IMPORTANT)
+        // Load profile data
         loadUserProfile();
 
-        // Navigation
+        // Order History
         orderHistoryButton.setOnClickListener(v ->
                 ((MainActivity) requireActivity()).openOrderHistory()
         );
+
+        // 🔥 LOGOUT CLICK (THIS WAS MISSING)
+        logoutButton.setOnClickListener(v -> logoutUser());
 
         return view;
     }
@@ -61,4 +68,15 @@ public class ProfileFragment extends Fragment {
             }
         }
     }
+
+    private void logoutUser() {
+        FirebaseAuth.getInstance().signOut();
+
+        Intent intent = new Intent(requireActivity(), WelcomePage.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+
+        requireActivity().finish();
+    }
+
 }

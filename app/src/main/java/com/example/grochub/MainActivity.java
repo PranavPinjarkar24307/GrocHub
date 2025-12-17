@@ -1,5 +1,6 @@
 package com.example.grochub;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,7 @@ import com.example.grochub.fragment.ProfileFragment;
 import com.example.grochub.fragment.WishlistFragment;
 import com.example.grochub.fragment.OrderHistoryFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,13 +21,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 🔐 AUTH CHECK
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            startActivity(new Intent(this, Loginpage.class));
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_main);
 
         bottomNav = findViewById(R.id.bottomNav);
 
-        // =============================
-        // Bottom Navigation Listener
-        // =============================
         bottomNav.setOnItemSelectedListener(item -> {
 
             Fragment fragment = null;
@@ -33,13 +40,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (id == R.id.menu_home) {
                 fragment = new HomeFragment();
-
             } else if (id == R.id.menu_cart) {
                 fragment = new CartFragment();
-
             } else if (id == R.id.menu_wishlist) {
                 fragment = new WishlistFragment();
-
             } else if (id == R.id.menu_profile) {
                 fragment = new ProfileFragment();
             }
@@ -51,9 +55,6 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-        // =============================
-        // Default screen on app start
-        // =============================
         if (savedInstanceState == null) {
             boolean openCart = getIntent().getBooleanExtra("open_cart", false);
 
@@ -65,9 +66,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // =============================
-    // Load BottomNav Fragments ONLY
-    // =============================
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -75,9 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    // ==================================================
-    // 🔥 IMPORTANT: Open Order History (Secondary Screen)
-    // ==================================================
+    // 🔥 ORDER HISTORY (SECONDARY SCREEN)
     public void openOrderHistory() {
         getSupportFragmentManager()
                 .beginTransaction()

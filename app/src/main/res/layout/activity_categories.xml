@@ -29,18 +29,35 @@
             android:scaleType="fitXY"
             app:tint="@color/black" />
 
+        <FrameLayout
+            android:id="@+id/search_container"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="14dp">
+
+            <!-- Your EXISTING SearchView (UNCHANGED STYLE) -->
             <androidx.appcompat.widget.SearchView
                 android:id="@+id/search_view"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="14dp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="@drawable/searchbar_catagories"
                 app:closeIcon="@null"
                 app:iconifiedByDefault="false"
                 app:queryHint="Search for fruits, vegetables, groce..."
-                app:searchIcon="@drawable/search">
-            </androidx.appcompat.widget.SearchView>
+                app:searchIcon="@drawable/search" />
+
+            <!-- 🔥 INVISIBLE CLICK LAYER -->
+            <View
+                android:id="@+id/search_click_overlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="@android:color/transparent"/>
+        </FrameLayout>
+
+
 
         <ImageView
             android:id="@+id/iv_cart_icon"

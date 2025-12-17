@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.grochub.Categories;
 import com.example.grochub.ProductDetailActivity;
 import com.example.grochub.R;
 import com.example.grochub.model.CategoryItem;
@@ -21,7 +20,7 @@ import java.util.List;
 
 public class CategoryItemAdapter extends RecyclerView.Adapter<CategoryItemAdapter.ItemViewHolder> {
 
-    private List<CategoryItem> items;
+    private final List<CategoryItem> items;
 
     public CategoryItemAdapter(List<CategoryItem> items) {
         this.items = items;
@@ -44,31 +43,31 @@ public class CategoryItemAdapter extends RecyclerView.Adapter<CategoryItemAdapte
         holder.tvPrice.setText(item.getPrice());
 
         Glide.with(holder.itemView.getContext())
-                .load(item.getImage())        // URL
+                .load(item.getImage())
                 .placeholder(R.drawable.gray_colour)
                 .error(R.drawable.gray_colour)
                 .into(holder.ivImage);
 
-        // ✅ PRODUCT CLICK → OPEN PRODUCT DETAIL
+        // ✅ OPEN PRODUCT DETAIL PAGE
         holder.itemView.setOnClickListener(v -> {
 
             int pos = holder.getBindingAdapterPosition();
             if (pos == RecyclerView.NO_POSITION) return;
 
             CategoryItem clickedItem = items.get(pos);
-
             Context ctx = v.getContext();
+
             Intent intent = new Intent(ctx, ProductDetailActivity.class);
 
-            intent.putExtra(ProductDetailActivity.EXTRA_NAME, clickedItem.getName());
-            intent.putExtra(ProductDetailActivity.EXTRA_PRICE, clickedItem.getPrice());
-            intent.putExtra(ProductDetailActivity.EXTRA_IMAGE, clickedItem.getImage());
+            // ✅ USE SAME KEYS AS ProductDetailActivity
+            intent.putExtra("product_name", clickedItem.getName());
+            intent.putExtra("product_price",
+                    Long.parseLong(clickedItem.getPrice().replace("₹", "")));
+            intent.putExtra("product_image", clickedItem.getImage());
 
             ctx.startActivity(intent);
         });
-
     }
-
 
     @Override
     public int getItemCount() {
@@ -79,7 +78,7 @@ public class CategoryItemAdapter extends RecyclerView.Adapter<CategoryItemAdapte
         ImageView ivImage;
         TextView tvName, tvPrice;
 
-        public ItemViewHolder(@NonNull View itemView) {
+        ItemViewHolder(@NonNull View itemView) {
             super(itemView);
             ivImage = itemView.findViewById(R.id.iv_product_image);
             tvName = itemView.findViewById(R.id.tv_product_name);

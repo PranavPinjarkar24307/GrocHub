@@ -1,5 +1,6 @@
 package com.example.grochub.adapter;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,9 +35,23 @@ public class OrderAdapter extends RecyclerView.Adapter<OrderAdapter.ViewHolder> 
 
         OrderModel order = list.get(position);
 
-        holder.tvStatus.setText(order.status);
-        holder.tvTotal.setText("₹" + order.totalAmount);
-        holder.tvItems.setText(order.items.size() + " items");
+        // ---------- STATUS ----------
+        String status = order.status != null ? order.status : "PROCESSING";
+        holder.tvStatus.setText(status);
+
+        // Status color
+        if ("DELIVERED".equalsIgnoreCase(status)) {
+            holder.tvStatus.setTextColor(Color.parseColor("#2E7D32")); // green
+        } else {
+            holder.tvStatus.setTextColor(Color.parseColor("#F57C00")); // orange
+        }
+
+        // ---------- TOTAL ----------
+        holder.tvTotal.setText("₹" + order.totalPrice);
+
+        // ---------- ITEMS COUNT ----------
+        int itemCount = order.items != null ? order.items.size() : 0;
+        holder.tvItems.setText(itemCount + " items");
     }
 
     @Override

@@ -1,13 +1,11 @@
 package com.example.grochub.fragment;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +15,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.grochub.Categories;
 import com.example.grochub.R;
+import com.example.grochub.SearchActivity;
 import com.example.grochub.adapter.HomeSliderAdapter;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -25,16 +24,13 @@ public class HomeFragment extends Fragment {
 
     private ViewPager2 homeSlider;
     private TabLayout homeSliderIndicator;
-    private Handler sliderHandler = new Handler();
+    private final Handler sliderHandler = new Handler();
 
-    // Slider Images
-    private int[] sliderImages = {
+    private final int[] sliderImages = {
             R.drawable.slider,
             R.drawable.slider,
             R.drawable.slider
     };
-
-    public HomeFragment() {}
 
     @Nullable
     @Override
@@ -50,8 +46,7 @@ public class HomeFragment extends Fragment {
         homeSlider = view.findViewById(R.id.homeSlider);
         homeSliderIndicator = view.findViewById(R.id.homeSliderIndicator);
 
-        HomeSliderAdapter sliderAdapter = new HomeSliderAdapter(sliderImages);
-        homeSlider.setAdapter(sliderAdapter);
+        homeSlider.setAdapter(new HomeSliderAdapter(sliderImages));
 
         new TabLayoutMediator(homeSliderIndicator, homeSlider,
                 (tab, position) -> tab.setCustomView(R.layout.tab_dot)
@@ -65,43 +60,43 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // ================= SEARCH =================
+        // ================= SEARCH BAR (100% BUTTON) =================
         SearchView searchView = view.findViewById(R.id.search_view);
+        View searchClickLayer = view.findViewById(R.id.search_click_layer);
+
+        // 🔒 Disable SearchView behavior ONLY (style untouched)
+        searchView.setIconified(false);
+        searchView.setFocusable(false);
+        searchView.setFocusableInTouchMode(false);
         searchView.clearFocus();
 
-        View searchPlate = searchView.findViewById(
-                androidx.appcompat.R.id.search_plate
-        );
-        if (searchPlate != null) {
-            searchPlate.setBackground(null);
-        }
+        // ❌ Prevent SearchView from handling touch
+        searchView.setOnTouchListener((v, event) -> true);
 
-        TextView searchText = searchView.findViewById(
-                androidx.appcompat.R.id.search_src_text
+        // ✅ FULL SEARCH BAR CLICK
+        searchClickLayer.setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), SearchActivity.class))
         );
-        if (searchText != null) {
-            searchText.setTextSize(12);
-            searchText.setHintTextColor(Color.parseColor("#BDBDBD"));
-            searchText.setTextColor(Color.parseColor("#000000"));
-        }
 
         // ================= CATEGORY CLICKS =================
-        View veg = view.findViewById(R.id.category_vegetables);
-        View fruits = view.findViewById(R.id.category_fruits);
-        View meatEggs = view.findViewById(R.id.category_meat_eggs);
-        View drinks = view.findViewById(R.id.category_drinks);
-        View bakery = view.findViewById(R.id.category_bakery);
+        view.findViewById(R.id.category_vegetables)
+                .setOnClickListener(v -> openCategory("vegetables"));
 
-        veg.setOnClickListener(v -> openCategory("vegetables"));
-        fruits.setOnClickListener(v -> openCategory("fruits"));
-        meatEggs.setOnClickListener(v -> openCategory("meat_eggs"));
-        drinks.setOnClickListener(v -> openCategory("drinks"));
-        bakery.setOnClickListener(v -> openCategory("bakery"));
+        view.findViewById(R.id.category_fruits)
+                .setOnClickListener(v -> openCategory("fruits"));
+
+        view.findViewById(R.id.category_meat_eggs)
+                .setOnClickListener(v -> openCategory("meat_eggs"));
+
+        view.findViewById(R.id.category_drinks)
+                .setOnClickListener(v -> openCategory("drinks"));
+
+        view.findViewById(R.id.category_bakery)
+                .setOnClickListener(v -> openCategory("bakery"));
 
         return view;
     }
 
-    // ================= OPEN CATEGORY =================
     private void openCategory(String categoryId) {
         Intent intent = new Intent(getActivity(), Categories.class);
         intent.putExtra("category_id", categoryId);
@@ -109,18 +104,13 @@ public class HomeFragment extends Fragment {
     }
 
     // ================= SLIDER AUTO SCROLL =================
-    private final Runnable sliderRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (homeSlider == null) return;
+    private final Runnable sliderRunnable = () -> {
+        if (homeSlider == null) return;
 
-            int currentPos = homeSlider.getCurrentItem();
-            if (currentPos == sliderImages.length - 1) {
-                homeSlider.setCurrentItem(0);
-            } else {
-                homeSlider.setCurrentItem(currentPos + 1);
-            }
-        }
+        int current = homeSlider.getCurrentItem();
+        homeSlider.setCurrentItem(
+                current == sliderImages.length - 1 ? 0 : current + 1
+        );
     };
 
     @Override
@@ -132,6 +122,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        sliderHandler.postDelayed(sliderRunnable, 8000);
+        sliderHandler.postDelayed(sliderRunnable, 3000);
     }
 }
