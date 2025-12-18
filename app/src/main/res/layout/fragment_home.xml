@@ -94,7 +94,7 @@
                 android:id="@+id/ll_delivery_location_row"
                 android:layout_width="match_parent"
                 android:layout_height="16dp"
-                android:layout_marginBottom="15dp"
+                android:layout_marginBottom="10dp"
                 android:layout_marginHorizontal="25dp"
                 android:orientation="horizontal"
                 android:layout_gravity="center_horizontal">
@@ -163,28 +163,33 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/backgroundgreenelement">
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/homeSlider"
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:background="@android:color/transparent"
-                android:clipToPadding="false"
-                android:layout_marginTop="15dp"/>
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/homeSliderIndicator"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:background="@android:color/transparent"
-                app:tabIndicatorHeight="0dp"
-                app:tabRippleColor="@android:color/transparent"
-                app:tabMode="fixed"
-                app:tabGravity="center"
-                app:tabPaddingStart="6dp"
-                app:tabPaddingEnd="6dp"
-                app:tabMinWidth="0dp"
-                app:tabMaxWidth="0dp" />
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    >
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/homeSlider"
+                        android:layout_width="match_parent"
+                        android:layout_height="210dp"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
+                        android:overScrollMode="never" />
+
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/homeSliderIndicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="12dp"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:background="@android:color/transparent"
+                        app:tabBackground="@drawable/selector_slider_dot"
+                        app:tabIndicatorHeight="0dp"
+                        app:tabMaxWidth="15dp"
+                        app:tabGravity="center"
+                        app:tabPaddingStart="4dp"
+                        app:tabPaddingEnd="4dp" />
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -345,47 +350,15 @@
                     android:layout_marginStart="21dp"
                     android:layout_marginTop="10dp"/>
 
-                <LinearLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_special_deals"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:paddingStart="21dp"
+                    android:paddingEnd="21dp"
                     android:layout_marginTop="15dp"
-                    android:layout_marginHorizontal="21dp">
+                    android:clipToPadding="false"/>
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/special_deal_1"
-                        android:layout_width="0dp"
-                        android:layout_height="125dp"
-                        android:layout_weight="1"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        app:cardCornerRadius="12dp">
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/offer1"
-                            android:scaleType="centerCrop"/>
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/special_deal_2"
-                        android:layout_width="0dp"
-                        android:layout_height="125dp"
-                        android:layout_weight="1"
-                        android:layout_marginStart="15dp"
-                        android:clickable="true"
-                        android:focusable="true"
-                        android:foreground="?attr/selectableItemBackground"
-                        app:cardCornerRadius="12dp">
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/offer2"
-                            android:scaleType="centerCrop"/>
-                    </androidx.cardview.widget.CardView>
-
-                </LinearLayout>
 
                 <!-- Example code to test scrolling -->
                 <TextView

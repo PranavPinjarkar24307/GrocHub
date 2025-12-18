@@ -1,12 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
 
-    <solid android:color="#FFEB3B"/>
+    <!-- Soft white background -->
+    <solid android:color="@android:color/white"/>
 
-    <!-- VERY important for pill -->
-    <corners android:radius="999dp"/>
+    <!-- Smooth rounded corners -->
+    <corners android:radius="12dp"/>
 
+    <!-- Very light border -->
     <stroke
         android:width="1dp"
-        android:color="#E0E0E0"/>
+        android:color="#E6E6E6"/>
+
+    <!-- Inner padding for comfort -->
+    <padding
+        android:left="4dp"
+        android:top="4dp"
+        android:right="4dp"
+        android:bottom="4dp"/>
+
 </shape>
