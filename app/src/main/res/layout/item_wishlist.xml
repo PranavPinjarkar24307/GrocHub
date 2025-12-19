@@ -1,40 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="12dp"
+    android:foreground="?attr/selectableItemBackground"
+    app:cardCornerRadius="14dp"
+    app:cardElevation="6dp"
     app:cardUseCompatPadding="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="10dp">
 
+        <!-- PRODUCT IMAGE -->
         <ImageView
             android:id="@+id/iv_product"
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="120dp"
             android:scaleType="centerCrop"
+            android:background="@drawable/rounded_image_bg"
+            android:clipToOutline="true"
             android:src="@drawable/slider" />
 
+        <!-- PRODUCT NAME -->
         <TextView
             android:id="@+id/tv_product_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="8dp"
             android:text="Tomatoes"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:maxLines="2"
+            android:ellipsize="end" />
 
+        <!-- PRICE -->
         <TextView
             android:id="@+id/tv_product_price"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
             android:text="₹50 / kg"
-            android:textSize="12sp" />
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:textColor="@color/Primary" />
 
     </LinearLayout>
 

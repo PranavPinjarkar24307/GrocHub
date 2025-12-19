@@ -29,13 +29,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:background="@color/black" />
+                    android:background="@color/light_gray" />
 
                 <ImageView
                     android:id="@+id/iv_back"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_margin="16dp"
+                    android:layout_marginTop="25dp"
+                    android:layout_marginLeft="16dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:padding="4dp"
                     android:src="@drawable/back_arrow"
@@ -92,7 +93,24 @@
                         android:id="@+id/tv_product_price"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="₹40 / kg"
+                        android:text="₹40"
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" / "
+                        android:textColor="@android:color/black"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tv_product_unit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="kg"
                         android:textColor="@android:color/black"
                         android:textSize="18sp"
                         android:textStyle="bold" />

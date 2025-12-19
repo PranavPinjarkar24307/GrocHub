@@ -3,16 +3,20 @@ package com.example.grochub.model;
 public class ProductModel {
 
     private String name;
-    private long price;      // 🔥 FIXED (was String)
+    private long price;      // price from Firestore
     private String image;
     private String category;
+
+    // 🔒 PERMANENT FIRESTORE DOCUMENT ID (e.g. "tomato")
     private String id;
 
-    private String unit;     // 🔥 ADDED (Firestore has this)
+    private String unit;
 
-    // REQUIRED empty constructor
+    // REQUIRED empty constructor for Firestore
     public ProductModel() {
     }
+
+    // ================= GETTERS =================
 
     public String getName() {
         return name;
@@ -36,5 +40,11 @@ public class ProductModel {
 
     public String getId() {
         return id;
+    }
+
+    // ================= SETTER (ONLY REQUIRED FIX) =================
+    // 🔥 This allows Firestore document ID to be injected safely
+    public void setId(String id) {
+        this.id = id;
     }
 }

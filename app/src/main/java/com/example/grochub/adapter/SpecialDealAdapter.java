@@ -1,6 +1,7 @@
 package com.example.grochub.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.grochub.ProductDetailActivity;
 import com.example.grochub.R;
 import com.example.grochub.model.SpecialDealModel;
 
@@ -47,18 +49,19 @@ public class SpecialDealAdapter
 
         SpecialDealModel item = list.get(position);
 
+        // ✅ TEXT
         holder.name.setText(item.getName());
         holder.unit.setText(item.getUnit());
         holder.specialPrice.setText("₹" + item.getSpecialPrice());
         holder.originalPrice.setText("₹" + item.getPrice());
 
-        // ✅ APPLY STRIKE-THROUGH SAFELY
+        // ✅ STRIKE THROUGH
         holder.originalPrice.setPaintFlags(
                 holder.originalPrice.getPaintFlags()
                         | Paint.STRIKE_THRU_TEXT_FLAG
         );
 
-        // % OFF badge from Firebase
+        // ✅ OFFER %
         if (item.getOfferPercent() > 0) {
             holder.percentage.setText(item.getOfferPercent() + "% OFF");
             holder.percentage.setVisibility(View.VISIBLE);
@@ -66,18 +69,27 @@ public class SpecialDealAdapter
             holder.percentage.setVisibility(View.GONE);
         }
 
+        // ✅ IMAGE
         Glide.with(context)
                 .load(item.getImage())
                 .placeholder(R.drawable.gray_colour)
                 .error(R.drawable.gray_colour)
                 .into(holder.image);
-    }
 
+        // 🔥 CLICK → PRODUCT DETAIL (PERMANENT ID)
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ProductDetailActivity.class);
+            intent.putExtra("product_id", item.getId()); // ✅ CORRECT
+            context.startActivity(intent);
+        });
+    }
 
     @Override
     public int getItemCount() {
         return list.size();
     }
+
+    // ================= VIEW HOLDER =================
 
     static class ViewHolder extends RecyclerView.ViewHolder {
 

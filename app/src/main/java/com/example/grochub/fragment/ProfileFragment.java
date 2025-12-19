@@ -7,13 +7,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.grochub.Loginpage;
 import com.example.grochub.MainActivity;
 import com.example.grochub.R;
 import com.example.grochub.WelcomePage;
@@ -35,48 +33,42 @@ public class ProfileFragment extends Fragment {
     ) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        // UI
         orderHistoryButton = view.findViewById(R.id.order_history_button);
         logoutButton = view.findViewById(R.id.logout_button);
         tvName = view.findViewById(R.id.profile_name);
         tvEmail = view.findViewById(R.id.profile_email);
 
-        // Load profile data
         loadUserProfile();
 
-        // Order History
-        orderHistoryButton.setOnClickListener(v ->
-                ((MainActivity) requireActivity()).openOrderHistory()
-        );
+        orderHistoryButton.setOnClickListener(v -> {
+            if (!isAdded() || getActivity() == null) return;
+            ((MainActivity) getActivity()).openOrderHistory();
+        });
 
-        // 🔥 LOGOUT CLICK (THIS WAS MISSING)
         logoutButton.setOnClickListener(v -> logoutUser());
 
         return view;
     }
 
     private void loadUserProfile() {
+        if (!isAdded()) return;
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
         if (user != null) {
-            tvEmail.setText(user.getEmail());
-
-            if (user.getDisplayName() != null) {
-                tvName.setText(user.getDisplayName());
-            } else {
-                tvName.setText("User");
-            }
+            tvEmail.setText(user.getEmail() != null ? user.getEmail() : "");
+            tvName.setText(user.getDisplayName() != null ? user.getDisplayName() : "User");
         }
     }
 
     private void logoutUser() {
+        if (!isAdded() || getActivity() == null) return;
+
         FirebaseAuth.getInstance().signOut();
 
-        Intent intent = new Intent(requireActivity(), WelcomePage.class);
+        Intent intent = new Intent(getActivity(), WelcomePage.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
 
-        requireActivity().finish();
+        getActivity().finish();
     }
-
 }

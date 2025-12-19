@@ -2,104 +2,92 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="160dp"
-    android:layout_height="wrap_content"
-    android:layout_marginEnd="15dp"
-    android:layout_marginBottom="10dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?attr/selectableItemBackground"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="3dp"
-    app:cardBackgroundColor="@color/white">
+    android:layout_width="165dp"
+    android:layout_height="210dp"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="@color/white"
+    >
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
-        <!-- IMAGE + BADGE -->
-        <FrameLayout
+        <ImageView
+            android:id="@+id/iv_offer_image"
             android:layout_width="match_parent"
-            android:layout_height="120dp">
+            android:layout_height="130dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/gray_colour"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/iv_offer_image"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/gray_colour"/>
-
-            <!-- % OFF BADGE -->
-            <TextView
-                android:id="@+id/tv_offer_percentage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="20% OFF"
-                android:textColor="@color/white"
-                android:textSize="10sp"
-                android:textStyle="bold"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="4dp"
-                android:layout_margin="8dp"
-                android:background="@drawable/bg_offer_percentage"
-                android:layout_gravity="top|end"/>
-        </FrameLayout>
-
-        <!-- DETAILS -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_offer_percentage"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_offer_percentage"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="4dp"
+            android:text="20% OFF"
+            android:textColor="@color/white"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/tv_offer_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Fresh Strawberry"
-                android:textStyle="bold"
-                android:textColor="#212121"
-                android:textSize="15sp"
-                android:maxLines="1"
-                android:ellipsize="end"/>
+        <TextView
+            android:id="@+id/tv_offer_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="5dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Fresh Strawberry"
+            android:textColor="#1A1A1A"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_offer_image" />
 
-            <TextView
-                android:id="@+id/tv_offer_unit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="250g"
-                android:textSize="12sp"
-                android:textColor="#9E9E9E"
-                android:layout_marginTop="2dp"/>
+        <TextView
+            android:id="@+id/tv_offer_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="250g"
+            android:textColor="#757575"
+            android:textSize="11sp"
+            app:layout_constraintStart_toStartOf="@id/tv_offer_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_offer_name" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
+        <TextView
+            android:id="@+id/tv_special_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="12dp"
+            android:text="₹99"
+            android:textColor="@color/Primary"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/tv_offer_name"
+            app:layout_constraintTop_toBottomOf="@id/tv_offer_unit" />
 
-                <TextView
-                    android:id="@+id/tv_special_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="₹99"
-                    android:textColor="@color/Primary"
-                    android:textStyle="bold"
-                    android:textSize="16sp"/>
+        <TextView
+            android:id="@+id/tv_original_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:text="₹149"
+            android:textColor="#BDBDBD"
+            android:textSize="12sp"
+            app:layout_constraintBottom_toBottomOf="@id/tv_special_price"
+            app:layout_constraintStart_toEndOf="@id/tv_special_price"
+            app:layout_constraintTop_toTopOf="@id/tv_special_price" />
 
-                <TextView
-                    android:id="@+id/tv_original_price"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="₹149"
-                    android:textSize="12sp"
-                    android:textColor="#BDBDBD"
-                    android:layout_marginStart="6dp"/>
-
-            </LinearLayout>
-
-        </LinearLayout>
-    </LinearLayout>
-
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

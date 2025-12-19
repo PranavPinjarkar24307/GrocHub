@@ -76,6 +76,10 @@ public class SearchActivity extends AppCompatActivity {
                     for (QueryDocumentSnapshot doc : snapshot) {
 
                         ProductModel product = doc.toObject(ProductModel.class);
+
+                        // 🔥 VERY IMPORTANT
+                        product.setId(doc.getId());
+
                         if (product.getName() == null) continue;
 
                         String name = product.getName().toLowerCase();
@@ -97,4 +101,5 @@ public class SearchActivity extends AppCompatActivity {
                         Log.e("SEARCH", "Firestore error", e)
                 );
     }
+
 }

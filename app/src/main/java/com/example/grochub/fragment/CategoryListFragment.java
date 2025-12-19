@@ -94,8 +94,13 @@ public class CategoryListFragment extends Fragment {
 
                     for (DocumentSnapshot doc : querySnapshot) {
                         CategoryItem item = doc.toObject(CategoryItem.class);
-                        itemList.add(item);
+
+                        if (item != null) {
+                            item.setId(doc.getId());   // 🔥 THIS IS THE KEY LINE
+                            itemList.add(item);
+                        }
                     }
+
 
                     adapter.notifyDataSetChanged();
                 })

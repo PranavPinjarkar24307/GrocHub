@@ -177,18 +177,17 @@
                         android:clipToPadding="false"
                         android:overScrollMode="never" />
 
-                    <com.google.android.material.tabs.TabLayout
-                        android:id="@+id/homeSliderIndicator"
+                    <LinearLayout
+                        android:id="@+id/sliderDots"
                         android:layout_width="wrap_content"
-                        android:layout_height="12dp"
+                        android:layout_height="wrap_content"
                         android:layout_gravity="bottom|center_horizontal"
-                        android:background="@android:color/transparent"
-                        app:tabBackground="@drawable/selector_slider_dot"
-                        app:tabIndicatorHeight="0dp"
-                        app:tabMaxWidth="15dp"
-                        app:tabGravity="center"
-                        app:tabPaddingStart="4dp"
-                        app:tabPaddingEnd="4dp" />
+                        android:layout_marginBottom="12dp"
+                        android:orientation="horizontal"
+                        android:gravity="center" />
+
+
+
                 </FrameLayout>
 
                 <TextView
@@ -387,11 +386,12 @@
                         android:focusable="true"
                         android:foreground="?attr/selectableItemBackground"
                         app:cardCornerRadius="12dp">
+
                         <ImageView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:src="@drawable/offer3"
-                            android:scaleType="centerCrop"/>
+                            android:scaleType="centerCrop"
+                            android:src="@drawable/offer3" />
                     </androidx.cardview.widget.CardView>
 
                     <androidx.cardview.widget.CardView

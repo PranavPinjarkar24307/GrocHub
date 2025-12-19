@@ -12,4 +12,10 @@
         <item name="android:color">@color/Primary</item>
 
     </style>
+    <style name="RoundedTopCorners">
+        <item name="cornerSizeTopLeft">12dp</item>
+        <item name="cornerSizeTopRight">12dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
 </resources>

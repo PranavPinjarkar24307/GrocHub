@@ -3,14 +3,16 @@ package com.example.grochub.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,24 +27,23 @@ import com.example.grochub.adapter.HomeSliderAdapter;
 import com.example.grochub.adapter.SpecialDealAdapter;
 import com.example.grochub.model.HomeSliderModel;
 import com.example.grochub.model.SpecialDealModel;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class HomeFragment extends Fragment {
 
-    // 🔹 Slider
+    // ================= SLIDER =================
     private ViewPager2 homeSlider;
-    private TabLayout homeSliderIndicator;
     private HomeSliderAdapter sliderAdapter;
     private final List<HomeSliderModel> sliderList = new ArrayList<>();
-    private final Handler sliderHandler = new Handler();
+    private final Handler sliderHandler = new Handler(Looper.getMainLooper());
 
-    // 🔹 Special Deals
+    private LinearLayout sliderDots;
+    private ImageView[] dots;
+
+    // ================= SPECIAL DEALS =================
     private RecyclerView rvSpecialDeals;
     private SpecialDealAdapter specialDealAdapter;
     private final List<SpecialDealModel> specialDealList = new ArrayList<>();
@@ -64,13 +65,15 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    // ========================= SLIDER =========================
+    // ================= SLIDER =================
 
     private void initSlider(View view) {
         homeSlider = view.findViewById(R.id.homeSlider);
-        homeSliderIndicator = view.findViewById(R.id.homeSliderIndicator);
+        sliderDots = view.findViewById(R.id.sliderDots);
 
-        sliderAdapter = new HomeSliderAdapter(requireContext(), sliderList);
+        if (!isAdded() || getContext() == null) return;
+
+        sliderAdapter = new HomeSliderAdapter(getContext(), sliderList);
         homeSlider.setAdapter(sliderAdapter);
 
         homeSlider.setClipToPadding(false);
@@ -86,16 +89,16 @@ public class HomeFragment extends Fragment {
         });
         homeSlider.setPageTransformer(transformer);
 
-        new TabLayoutMediator(homeSliderIndicator, homeSlider,
-                (tab, position) -> {}).attach();
-
-        homeSlider.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                sliderHandler.removeCallbacks(sliderRunnable);
-                sliderHandler.postDelayed(sliderRunnable, 4000);
-            }
-        });
+        homeSlider.registerOnPageChangeCallback(
+                new ViewPager2.OnPageChangeCallback() {
+                    @Override
+                    public void onPageSelected(int position) {
+                        updateDots(position);
+                        sliderHandler.removeCallbacks(sliderRunnable);
+                        sliderHandler.postDelayed(sliderRunnable, 4000);
+                    }
+                }
+        );
 
         loadHomeSliders();
     }
@@ -107,14 +110,18 @@ public class HomeFragment extends Fragment {
                 .orderBy("order")
                 .get()
                 .addOnSuccessListener(snapshot -> {
+                    if (!isAdded() || getView() == null) return;
+
                     sliderList.clear();
 
-                    if (snapshot != null && !snapshot.isEmpty()) {
+                    if (!snapshot.isEmpty()) {
                         for (DocumentSnapshot doc : snapshot) {
                             HomeSliderModel slider = doc.toObject(HomeSliderModel.class);
                             if (slider != null) sliderList.add(slider);
                         }
+
                         sliderAdapter.notifyDataSetChanged();
+                        setupDots(sliderList.size());
                         sliderHandler.postDelayed(sliderRunnable, 4000);
                     }
                 })
@@ -123,65 +130,97 @@ public class HomeFragment extends Fragment {
                 );
     }
 
-    private final Runnable sliderRunnable = new Runnable() {
-        @Override
-        public void run() {
-            if (homeSlider != null && sliderList.size() > 0) {
-                int next = (homeSlider.getCurrentItem() + 1) % sliderList.size();
-                homeSlider.setCurrentItem(next, true);
-            }
+    // ================= DOTS =================
+
+    private void setupDots(int count) {
+        if (!isAdded() || getContext() == null) return;
+
+        sliderDots.removeAllViews();
+        dots = new ImageView[count];
+
+        for (int i = 0; i < count; i++) {
+            dots[i] = new ImageView(getContext());
+            dots[i].setImageResource(R.drawable.dot);
+
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT
+                    );
+            params.setMargins(8, 0, 8, 0);
+
+            dots[i].setLayoutParams(params);
+            sliderDots.addView(dots[i]);
         }
-    };
 
-    // ========================= SEARCH =========================
-
-    private void initSearchBar(View view) {
-        SearchView searchView = view.findViewById(R.id.search_view);
-        View searchClickLayer = view.findViewById(R.id.search_click_layer);
-
-        searchView.setIconified(false);
-        searchView.setFocusable(false);
-        searchView.clearFocus();
-
-        searchClickLayer.setOnClickListener(v ->
-                startActivity(new Intent(getActivity(), SearchActivity.class))
-        );
+        if (count > 0) {
+            dots[0].setImageResource(R.drawable.dot_selected);
+            dots[0].setScaleX(1.1f);
+            dots[0].setScaleY(1.1f);
+        }
     }
 
-    // ========================= CATEGORIES =========================
+    private void updateDots(int position) {
+        if (dots == null || !isAdded()) return;
+
+        for (int i = 0; i < dots.length; i++) {
+            if (i == position) {
+                dots[i].setImageResource(R.drawable.dot_selected);
+            } else {
+                dots[i].setImageResource(R.drawable.dot);
+            }
+        }
+    }
+
+    private final Runnable sliderRunnable = () -> {
+        if (!isAdded() || homeSlider == null || sliderList.isEmpty()) return;
+
+        int next = (homeSlider.getCurrentItem() + 1) % sliderList.size();
+        homeSlider.setCurrentItem(next, true);
+    };
+
+    // ================= SEARCH =================
+
+    private void initSearchBar(View view) {
+        View searchClickLayer = view.findViewById(R.id.search_click_layer);
+        searchClickLayer.setOnClickListener(v -> {
+            if (!isAdded()) return;
+            startActivity(new Intent(getActivity(), SearchActivity.class));
+        });
+    }
+
+    // ================= CATEGORIES =================
 
     private void initCategories(View view) {
         view.findViewById(R.id.category_vegetables)
                 .setOnClickListener(v -> openCategory("vegetables"));
-
         view.findViewById(R.id.category_fruits)
                 .setOnClickListener(v -> openCategory("fruits"));
-
         view.findViewById(R.id.category_meat_eggs)
                 .setOnClickListener(v -> openCategory("meat_eggs"));
-
         view.findViewById(R.id.category_drinks)
                 .setOnClickListener(v -> openCategory("drinks"));
-
         view.findViewById(R.id.category_bakery)
                 .setOnClickListener(v -> openCategory("bakery"));
     }
 
     private void openCategory(String categoryId) {
+        if (!isAdded()) return;
         Intent intent = new Intent(getActivity(), Categories.class);
         intent.putExtra("category_id", categoryId);
         startActivity(intent);
     }
 
-    // ========================= SPECIAL DEALS =========================
+    // ================= SPECIAL DEALS =================
 
     private void initSpecialDeals(View view) {
+        if (!isAdded() || getContext() == null) return;
+
         rvSpecialDeals = view.findViewById(R.id.rv_special_deals);
         rvSpecialDeals.setLayoutManager(
                 new LinearLayoutManager(getContext(),
                         LinearLayoutManager.HORIZONTAL, false)
         );
-        rvSpecialDeals.setNestedScrollingEnabled(false);
 
         specialDealAdapter = new SpecialDealAdapter(getContext(), specialDealList);
         rvSpecialDeals.setAdapter(specialDealAdapter);
@@ -196,22 +235,21 @@ public class HomeFragment extends Fragment {
                 .limit(10)
                 .get()
                 .addOnSuccessListener(snapshot -> {
+                    if (!isAdded()) return;
+
                     specialDealList.clear();
-                    if (snapshot != null && !snapshot.isEmpty()) {
-                        for (DocumentSnapshot doc : snapshot) {
-                            SpecialDealModel deal =
-                                    doc.toObject(SpecialDealModel.class);
-                            if (deal != null) specialDealList.add(deal);
+                    for (DocumentSnapshot doc : snapshot) {
+                        SpecialDealModel deal = doc.toObject(SpecialDealModel.class);
+                        if (deal != null) {
+                            deal.setId(doc.getId());
+                            specialDealList.add(deal);
                         }
-                        specialDealAdapter.notifyDataSetChanged();
                     }
-                })
-                .addOnFailureListener(e ->
-                        Log.e("Firebase", "Error loading deals", e)
-                );
+                    specialDealAdapter.notifyDataSetChanged();
+                });
     }
 
-    // ========================= LIFECYCLE =========================
+    // ================= LIFECYCLE =================
 
     @Override
     public void onPause() {
@@ -220,10 +258,8 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (sliderList.size() > 0) {
-            sliderHandler.postDelayed(sliderRunnable, 4000);
-        }
+    public void onDestroyView() {
+        super.onDestroyView();
+        sliderHandler.removeCallbacksAndMessages(null);
     }
 }
