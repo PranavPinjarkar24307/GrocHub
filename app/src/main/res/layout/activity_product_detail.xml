@@ -22,7 +22,7 @@
             <!-- TOP IMAGE + BACK BUTTON -->
             <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="260dp">
+                android:layout_height="300dp">
 
                 <ImageView
                     android:id="@+id/iv_product_image"
@@ -35,9 +35,9 @@
                     android:id="@+id/iv_back"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="45dp"
                     android:layout_marginLeft="16dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:background="@drawable/back_button_trasparent"
                     android:padding="4dp"
                     android:src="@drawable/back_arrow"
                     app:tint="@android:color/white" />
