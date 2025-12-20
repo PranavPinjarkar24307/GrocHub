@@ -32,16 +32,17 @@ import com.example.grochub.adapter.SpecialDealAdapter;
 import com.example.grochub.model.HomeSliderModel;
 import com.example.grochub.model.SpecialDealModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+// ⭐ REMOVED Realtime Database Imports
+// ⭐ ADDED Firestore Imports
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class HomeFragment extends Fragment {
 
@@ -62,6 +63,7 @@ public class HomeFragment extends Fragment {
     private TextView tvDeliveryAddress;
     private ImageView ivDropdownArrow;
     private String fullAddressDetails = "";
+    private ListenerRegistration addressListener; // To stop listening when fragment closes
 
     @Nullable
     @Override
@@ -82,6 +84,7 @@ public class HomeFragment extends Fragment {
         tvDeliveryAddress = view.findViewById(R.id.tv_delivery_address);
         ivDropdownArrow = view.findViewById(R.id.iv_location_dropdown_arrow);
 
+        // Load data from Firestore
         loadUserAddress();
 
         ivDropdownArrow.setOnClickListener(v -> showAddressPopup());
@@ -105,6 +108,7 @@ public class HomeFragment extends Fragment {
                 .show();
     }
 
+    // ⭐ UPDATED FOR FIRESTORE (Matching your AddressActivity)
     private void loadUserAddress() {
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid == null) {
@@ -112,54 +116,58 @@ public class HomeFragment extends Fragment {
             return;
         }
 
-        DatabaseReference addressRef = FirebaseDatabase.getInstance()
-                .getReference("Users")
-                .child(uid)
-                .child("Address");
+        // Listen to: users -> [uid]
+        addressListener = FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable DocumentSnapshot snapshot, @Nullable FirebaseFirestoreException error) {
+                        if (error != null) {
+                            Log.e("HomeFragment", "Listen failed.", error);
+                            return;
+                        }
 
-        // ⭐ KEEP DATA SYNCED LOCALLY ⭐
-        // This ensures the address is available offline/after restart
-        addressRef.keepSynced(true);
+                        if (snapshot != null && snapshot.exists()) {
+                            // The address is saved as a Map inside the "address" field
+                            Map<String, Object> addressMap = (Map<String, Object>) snapshot.get("address");
 
-        addressRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String addressLine = snapshot.child("addressLine").getValue(String.class);
-                    String city = snapshot.child("city").getValue(String.class);
-                    String state = snapshot.child("state").getValue(String.class);
-                    String pin = snapshot.child("pinCode").getValue(String.class);
-                    String phone = snapshot.child("phone").getValue(String.class);
+                            if (addressMap != null) {
+                                String addressLine = (String) addressMap.get("addressLine");
+                                String city = (String) addressMap.get("city");
+                                String state = (String) addressMap.get("state");
+                                String pin = (String) addressMap.get("pinCode");
+                                String phone = (String) addressMap.get("phone");
 
-                    String shortText = "";
-                    if (addressLine != null) shortText += addressLine;
-                    if (city != null && !city.isEmpty()) shortText += ", " + city;
+                                // 1. Update Short Header Text
+                                String shortText = "";
+                                if (addressLine != null) shortText += addressLine;
+                                if (city != null && !city.isEmpty()) shortText += ", " + city;
 
-                    if (!shortText.isEmpty()) {
-                        tvDeliveryAddress.setText(shortText);
-                    } else {
-                        tvDeliveryAddress.setText("Set your address");
+                                if (!shortText.isEmpty()) {
+                                    tvDeliveryAddress.setText(shortText);
+                                } else {
+                                    tvDeliveryAddress.setText("Set your address");
+                                }
+
+                                // 2. Update Full Details String for Popup
+                                StringBuilder sb = new StringBuilder();
+                                if (addressLine != null) sb.append(addressLine).append("\n");
+                                if (city != null) sb.append(city);
+                                if (state != null) sb.append(", ").append(state);
+                                if (pin != null) sb.append(" - ").append(pin);
+                                if (phone != null) sb.append("\n\nPhone: ").append(phone);
+
+                                fullAddressDetails = sb.toString();
+                            } else {
+                                tvDeliveryAddress.setText("Set your delivery location");
+                                fullAddressDetails = "No address saved.";
+                            }
+                        } else {
+                            tvDeliveryAddress.setText("Set your delivery location");
+                        }
                     }
-
-                    StringBuilder sb = new StringBuilder();
-                    if (addressLine != null) sb.append(addressLine).append("\n");
-                    if (city != null) sb.append(city);
-                    if (state != null) sb.append(", ").append(state);
-                    if (pin != null) sb.append(" - ").append(pin);
-                    if (phone != null) sb.append("\n\nPhone: ").append(phone);
-
-                    fullAddressDetails = sb.toString();
-
-                } else {
-                    tvDeliveryAddress.setText("Set your delivery location");
-                    fullAddressDetails = "No address saved.";
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-            }
-        });
+                });
     }
 
     // ================= SLIDER =================
@@ -336,5 +344,9 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         sliderHandler.removeCallbacksAndMessages(null);
+        // Clean up listener to prevent leaks
+        if (addressListener != null) {
+            addressListener.remove();
+        }
     }
 }

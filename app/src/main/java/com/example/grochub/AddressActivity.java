@@ -19,11 +19,9 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.DocumentSnapshot; // ⭐ Firestore Import
+import com.google.firebase.firestore.FirebaseFirestore; // ⭐ Firestore Import
+import com.google.firebase.firestore.SetOptions; // ⭐ Firestore Import
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -39,11 +37,15 @@ public class AddressActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient fusedLocationClient;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    private FirebaseFirestore firestore; // ⭐ Firestore Instance
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_address);
+
+        // Init Firestore
+        firestore = FirebaseFirestore.getInstance();
 
         // Init Views
         etAddressLine = findViewById(R.id.et_address_line);
@@ -56,45 +58,77 @@ public class AddressActivity extends AppCompatActivity {
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // 🔥 LOAD SAVED DATA (Persistence)
+        // Load data from Firestore
         loadSavedAddress();
 
         btnCurrentLocation.setOnClickListener(v -> checkPermissionAndGetLocation());
-
-        btnSave.setOnClickListener(v -> saveAddressToRealtimeDatabase());
+        btnSave.setOnClickListener(v -> saveAddressToFirestore());
     }
 
     private void loadSavedAddress() {
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid != null) {
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users").child(uid).child("Address");
-
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    if (snapshot.exists()) {
-                        String address = snapshot.child("addressLine").getValue(String.class);
-                        String city = snapshot.child("city").getValue(String.class);
-                        String state = snapshot.child("state").getValue(String.class);
-                        String pin = snapshot.child("pinCode").getValue(String.class);
-                        String phone = snapshot.child("phone").getValue(String.class);
-
-                        if (address != null) etAddressLine.setText(address);
-                        if (city != null) etCity.setText(city);
-                        if (state != null) etState.setText(state);
-                        if (pin != null) etPinCode.setText(pin);
-                        if (phone != null) etPhone.setText(phone);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    // Do nothing
-                }
-            });
+            // ⭐ Read from Firestore: users -> [uid]
+            firestore.collection("users").document(uid).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            // Check if the "address" field map exists
+                            Map<String, Object> addressMap = (Map<String, Object>) documentSnapshot.get("address");
+                            if (addressMap != null) {
+                                etAddressLine.setText((String) addressMap.get("addressLine"));
+                                etCity.setText((String) addressMap.get("city"));
+                                etState.setText((String) addressMap.get("state"));
+                                etPinCode.setText((String) addressMap.get("pinCode"));
+                                etPhone.setText((String) addressMap.get("phone"));
+                            }
+                        }
+                    });
         }
     }
 
+    private void saveAddressToFirestore() {
+        String address = etAddressLine.getText() != null ? etAddressLine.getText().toString().trim() : "";
+        String city = etCity.getText() != null ? etCity.getText().toString().trim() : "";
+        String state = etState.getText() != null ? etState.getText().toString().trim() : "";
+        String pinCode = etPinCode.getText() != null ? etPinCode.getText().toString().trim() : "";
+        String phone = etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
+
+        if (address.isEmpty() || phone.isEmpty()) {
+            Toast.makeText(this, "Please fill in Address and Phone", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Toast.makeText(this, "Saving...", Toast.LENGTH_SHORT).show();
+
+        // Create Address Map
+        Map<String, Object> addressData = new HashMap<>();
+        addressData.put("addressLine", address);
+        addressData.put("city", city);
+        addressData.put("state", state);
+        addressData.put("pinCode", pinCode);
+        addressData.put("phone", phone);
+
+        // Create Main Map to update
+        Map<String, Object> userUpdate = new HashMap<>();
+        userUpdate.put("address", addressData); // Save under "address" field
+
+        String uid = FirebaseAuth.getInstance().getUid();
+
+        if (uid != null) {
+            // ⭐ Save to Firestore with merge (updates only address, keeps other data)
+            firestore.collection("users").document(uid)
+                    .set(userUpdate, SetOptions.merge())
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(AddressActivity.this, "Address Saved!", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(AddressActivity.this, "Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    });
+        }
+    }
+
+    // ... (Keep existing permission and location logic unchanged) ...
     private void checkPermissionAndGetLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -110,14 +144,12 @@ public class AddressActivity extends AppCompatActivity {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-
         Toast.makeText(this, "Fetching location...", Toast.LENGTH_SHORT).show();
-
         fusedLocationClient.getLastLocation().addOnSuccessListener(this, location -> {
             if (location != null) {
                 fillAddressForm(location);
             } else {
-                Toast.makeText(this, "Could not find location. Ensure GPS is on.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Ensure GPS is on.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -135,48 +167,6 @@ public class AddressActivity extends AppCompatActivity {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void saveAddressToRealtimeDatabase() {
-        String address = etAddressLine.getText() != null ? etAddressLine.getText().toString().trim() : "";
-        String city = etCity.getText() != null ? etCity.getText().toString().trim() : "";
-        String state = etState.getText() != null ? etState.getText().toString().trim() : "";
-        String pinCode = etPinCode.getText() != null ? etPinCode.getText().toString().trim() : "";
-        String phone = etPhone.getText() != null ? etPhone.getText().toString().trim() : "";
-
-        if (address.isEmpty() || phone.isEmpty()) {
-            Toast.makeText(this, "Please fill in Address and Phone", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Loading indicator
-        Toast.makeText(this, "Saving...", Toast.LENGTH_SHORT).show();
-
-        Map<String, Object> addressMap = new HashMap<>();
-        addressMap.put("addressLine", address);
-        addressMap.put("city", city);
-        addressMap.put("state", state);
-        addressMap.put("pinCode", pinCode);
-        addressMap.put("phone", phone);
-
-        String uid = FirebaseAuth.getInstance().getUid();
-
-        if (uid != null) {
-            DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference("Users");
-
-            databaseRef.child(uid).child("Address").setValue(addressMap)
-                    .addOnSuccessListener(aVoid -> {
-                        // ✅ SUCCESS POPUP
-                        Toast.makeText(AddressActivity.this, "Address Saved Successfully!", Toast.LENGTH_SHORT).show();
-                        // ✅ REDIRECT BACK
-                        finish();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(AddressActivity.this, "Failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    });
-        } else {
-            Toast.makeText(this, "Error: User is not logged in!", Toast.LENGTH_SHORT).show();
         }
     }
 
