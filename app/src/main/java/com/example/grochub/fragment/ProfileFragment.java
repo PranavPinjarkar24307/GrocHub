@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.grochub.AddressActivity;
 import com.example.grochub.MainActivity;
 import com.example.grochub.R;
 import com.example.grochub.WelcomePage;
@@ -21,28 +22,40 @@ import com.google.firebase.auth.FirebaseUser;
 public class ProfileFragment extends Fragment {
 
     private View orderHistoryButton;
+    private View addressButton; // We will link this to the clickable text
     private Button logoutButton;
     private TextView tvName, tvEmail;
 
     @Nullable
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        // 1. Initialize Views
         orderHistoryButton = view.findViewById(R.id.order_history_button);
+
+        // ⭐ FIX: We target the TextView ID 'address_button' instead of the card
+        addressButton = view.findViewById(R.id.address_button);
+
         logoutButton = view.findViewById(R.id.logout_button);
         tvName = view.findViewById(R.id.profile_name);
         tvEmail = view.findViewById(R.id.profile_email);
 
         loadUserProfile();
 
+        // 2. Setup Address Click Listener
+        addressButton.setOnClickListener(v -> {
+            if (getActivity() != null) {
+                Intent intent = new Intent(getActivity(), AddressActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        // 3. Other Listeners
         orderHistoryButton.setOnClickListener(v -> {
-            if (!isAdded() || getActivity() == null) return;
-            ((MainActivity) getActivity()).openOrderHistory();
+            if (getActivity() != null) {
+                ((MainActivity) getActivity()).openOrderHistory();
+            }
         });
 
         logoutButton.setOnClickListener(v -> logoutUser());
@@ -51,8 +64,6 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadUserProfile() {
-        if (!isAdded()) return;
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             tvEmail.setText(user.getEmail() != null ? user.getEmail() : "");
@@ -61,14 +72,11 @@ public class ProfileFragment extends Fragment {
     }
 
     private void logoutUser() {
-        if (!isAdded() || getActivity() == null) return;
-
+        if (getActivity() == null) return;
         FirebaseAuth.getInstance().signOut();
-
         Intent intent = new Intent(getActivity(), WelcomePage.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-
         getActivity().finish();
     }
 }

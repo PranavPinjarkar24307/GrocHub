@@ -10,16 +10,17 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- Useful for analytics or network checks -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- For barcode scanner (optional) -->
     <uses-permission android:name="android.permission.CAMERA" /> <!-- Older devices image storage (ignored on Android 10+) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" /> <!-- ⭐ YOUR NEW LOCATION PERMISSION ⭐ -->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
+        android:name=".GrochubApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -28,6 +29,9 @@
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.GrocHub">
+        <activity
+            android:name=".AddressActivity"
+            android:exported="false" />
         <activity
             android:name=".SearchActivity"
             android:exported="false" />
