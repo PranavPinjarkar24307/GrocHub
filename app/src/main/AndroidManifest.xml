@@ -17,7 +17,7 @@
         android:maxSdkVersion="32" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" /> <!-- ⭐ YOUR NEW LOCATION PERMISSION ⭐ -->
+        android:maxSdkVersion="28" />
 
     <application
         android:name=".GrochubApplication"
@@ -29,6 +29,12 @@
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.GrocHub">
+        <activity
+            android:name=".NumberEnterVerification"
+            android:exported="false" />
+        <activity
+            android:name=".NumberEnter"
+            android:exported="false" />
         <activity
             android:name=".AddressActivity"
             android:exported="false" />

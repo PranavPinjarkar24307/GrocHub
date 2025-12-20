@@ -6,8 +6,11 @@ import android.view.View; // Needed for View.OnClickListener
 import android.widget.EditText;
 import android.widget.LinearLayout; // Correct type for btnLogin
 import android.widget.Toast;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
+import android.widget.ImageView;
 
-import androidx.activity.EdgeToEdge;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -21,13 +24,15 @@ public class Loginpage extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private LinearLayout btnLogin; // Correctly declared as LinearLayout
     private FirebaseAuth auth;
+    private ImageView ivPasswordToggle;
+    private boolean isPasswordVisible = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // 1. Initialize EdgeToEdge and Set Content View
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_loginpage);
 
         // 2. Resolve 'main' ID issue: Ensure your *root* view in XML has android:id="@+id/main"
@@ -63,18 +68,42 @@ public class Loginpage extends AppCompatActivity {
                 return;
             }
 
+            btnLogin.setEnabled(false); // 🔒 lock button
+
             auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
+                        btnLogin.setEnabled(true); // 🔓 unlock
+
                         if (task.isSuccessful()) {
-                            Toast.makeText(this, "Login Successful!", Toast.LENGTH_SHORT).show();
                             startActivity(new Intent(Loginpage.this, MainActivity.class));
                             finish();
                         } else {
-                            String errorMessage = "Login Failed: " +
-                                    (task.getException() != null ? task.getException().getMessage() : "Unknown Error");
-                            Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
+                            Toast.makeText(this,
+                                    task.getException() != null
+                                            ? task.getException().getMessage()
+                                            : "Login failed",
+                                    Toast.LENGTH_LONG).show();
                         }
                     });
         });
+
+        ivPasswordToggle = findViewById(R.id.iv_password_toggle);
+
+        ivPasswordToggle.setOnClickListener(v -> {
+            if (isPasswordVisible) {
+                etPassword.setTransformationMethod(
+                        PasswordTransformationMethod.getInstance()
+                );
+                ivPasswordToggle.setImageResource(R.drawable.ic_eye_closed);
+            } else {
+                etPassword.setTransformationMethod(
+                        HideReturnsTransformationMethod.getInstance()
+                );
+                ivPasswordToggle.setImageResource(R.drawable.ic_eye_open);
+            }
+            isPasswordVisible = !isPasswordVisible;
+            etPassword.setSelection(etPassword.getText().length());
+        });
+
     }
 }
