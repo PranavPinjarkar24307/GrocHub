@@ -75,7 +75,8 @@
 
         <EditText
             android:inputType="textEmailAddress" android:hint="yourmail@mail.com"
-            android:id="@+id/et_email" android:textColor="#BDBDBD"
+            android:id="@+id/et_email"
+            android:textColor="@color/black"
             android:textSize="12sp"
             android:layout_marginBottom="6dp"
             android:layout_marginStart="20dp"
@@ -109,7 +110,8 @@
             <EditText
                 android:inputType="textPassword" android:hint="your password"
                 android:background="@null"
-                android:id="@+id/et_password" android:textColor="#BDBDBD"
+                android:id="@+id/et_password"
+                android:textColor="@color/black"
                 android:textSize="12sp"
                 android:layout_marginEnd="4dp"
                 android:layout_width="0dp"

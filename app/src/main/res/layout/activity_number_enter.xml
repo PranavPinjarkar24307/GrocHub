@@ -106,7 +106,7 @@
                                 android:layout_weight="1"
                                 android:paddingVertical="15dp"
                                 android:gravity="center"
-                                android:hintTextColor="#FF000000" />
+                                />
                         </LinearLayout>
 
                         <LinearLayout
