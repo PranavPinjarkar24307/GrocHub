@@ -19,8 +19,8 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.firestore.FirebaseFirestore; // ⭐ Firestore Import
-import com.google.firebase.firestore.SetOptions; // ⭐ Firestore Import
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ public class WelcomePage extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
-    private FirebaseFirestore firestore; // ⭐ Firestore
+    private FirebaseFirestore firestore;
 
     private static final int RC_GOOGLE_SIGN_IN = 101;
 
@@ -43,7 +43,7 @@ public class WelcomePage extends AppCompatActivity {
         setContentView(R.layout.activity_welcome_page);
 
         firebaseAuth = FirebaseAuth.getInstance();
-        firestore = FirebaseFirestore.getInstance(); // ⭐ Init Firestore
+        firestore = FirebaseFirestore.getInstance();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -91,13 +91,11 @@ public class WelcomePage extends AppCompatActivity {
         firebaseAuth.signInWithCredential(credential)
                 .addOnSuccessListener(authResult -> {
                     FirebaseUser user = firebaseAuth.getCurrentUser();
-                    // ⭐ SAVE USER TO FIRESTORE AFTER LOGIN
                     saveUserToFirestore(user);
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    // ⭐ Logic to save user to Firestore
     private void saveUserToFirestore(FirebaseUser user) {
         if (user == null) return;
 
@@ -110,28 +108,40 @@ public class WelcomePage extends AppCompatActivity {
         userData.put("email", email);
         if (name != null) userData.put("username", name);
 
-        // Use Merge so we don't overwrite existing data (like address)
         firestore.collection("users").document(uid)
                 .set(userData, SetOptions.merge())
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Welcome " + user.getDisplayName(), Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(this, MainActivity.class));
-                    finish();
+                    // ⭐ CHECK PHONE NUMBER BEFORE MAIN ACTIVITY
+                    checkUserAndRedirect();
                 })
                 .addOnFailureListener(e -> {
-                    // Even if save fails, let them in, but show error
                     Toast.makeText(this, "Error saving profile: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    startActivity(new Intent(this, MainActivity.class));
-                    finish();
+                    checkUserAndRedirect();
                 });
+    }
+
+    // ⭐ HELPER METHOD
+    private void checkUserAndRedirect() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            if (user.getPhoneNumber() == null || user.getPhoneNumber().isEmpty()) {
+                Intent intent = new Intent(this, NumberEnter.class);
+                startActivity(intent);
+            } else {
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
+            }
+            finish();
+        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         if (firebaseAuth.getCurrentUser() != null) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
+            // ⭐ CHECK PHONE NUMBER ON AUTO LOGIN
+            checkUserAndRedirect();
         }
     }
 }

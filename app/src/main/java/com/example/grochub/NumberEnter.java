@@ -1,24 +1,57 @@
 package com.example.grochub;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 public class NumberEnter extends AppCompatActivity {
+
+    private EditText etPhone;
+    private LinearLayout btnNext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_number_enter);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        etPhone = findViewById(R.id.et_phone_number);
+        btnNext = findViewById(R.id.btn_next);
+
+        // Skip if user is already verified
+        if (FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() != null) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+            return;
+        }
+
+        btnNext.setOnClickListener(v -> {
+            String number = etPhone.getText().toString().trim();
+
+            if (number.isEmpty() || number.length() < 10) {
+                etPhone.setError("Enter a valid 10-digit number");
+                return;
+            }
+
+            // ⭐ FIX: Force +91 for India
+            // If the user didn't type +, add +91
+            String fullNumber;
+            if (!number.startsWith("+")) {
+                fullNumber = "+91" + number;
+            } else {
+                fullNumber = number;
+            }
+
+            Intent intent = new Intent(NumberEnter.this, NumberEnterVerification.class);
+            intent.putExtra("phonenumber", fullNumber);
+            startActivity(intent);
         });
+
+        findViewById(R.id.iv_back).setOnClickListener(v -> finish());
     }
 }

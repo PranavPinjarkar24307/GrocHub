@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -6,16 +7,19 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <ScrollView
         android:id="@+id/ri8fj8ty0p49"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="#FFFFFF">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+
             <LinearLayout
                 android:id="@+id/rm9wzklcekw"
                 android:layout_width="match_parent"
@@ -24,6 +28,7 @@
                 android:layout_marginTop="93dp"
                 android:layout_marginBottom="48dp"
                 android:orientation="vertical">
+
                 <LinearLayout
                     android:id="@+id/r7eqzi0csuka"
                     android:layout_width="wrap_content"
@@ -31,31 +36,35 @@
                     android:gravity="center_horizontal"
                     android:layout_marginBottom="24dp"
                     android:orientation="vertical">
+
                     <ImageView
                         android:id="@+id/r4ydvwq8ilww"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:background="@drawable/back_button_trasparent"
-                        android:scaleType="fitXY"
-                        />
+                        android:scaleType="fitXY" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/rhqbzkliqr46"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <LinearLayout
                         android:id="@+id/rp0blm0s9w7"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="32dp"
                         android:orientation="vertical">
+
                         <LinearLayout
                             android:id="@+id/rkztkocqxnh"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="32dp"
                             android:orientation="vertical">
+
                             <TextView
                                 android:id="@+id/ryxw8o9u1twi"
                                 android:textColor="#12110D"
@@ -64,14 +73,15 @@
                                 android:layout_marginBottom="8dp"
                                 android:layout_height="wrap_content"
                                 android:layout_width="wrap_content"
-                                android:text="Enter the Code"
-                                />
+                                android:text="Enter the Code" />
+
                             <LinearLayout
                                 android:id="@+id/r0dgkrgimbpx8"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:paddingBottom="5dp"
                                 android:orientation="vertical">
+
                                 <TextView
                                     android:id="@+id/rdm87at6v25r"
                                     android:textColor="#5A5E60"
@@ -79,8 +89,8 @@
                                     android:layout_marginBottom="11dp"
                                     android:layout_height="wrap_content"
                                     android:layout_width="wrap_content"
-                                    android:text="A verification code has been sent to"
-                                    />
+                                    android:text="A verification code has been sent to" />
+
                                 <TextView
                                     android:id="@+id/r56362criajk"
                                     android:textColor="#12110D"
@@ -89,157 +99,34 @@
                                     android:layout_marginStart="1dp"
                                     android:layout_height="wrap_content"
                                     android:layout_width="wrap_content"
-                                    android:text="+971 1 123 123 1234"
-                                    />
+                                    android:text="+91 000 000 0000" />
                             </LinearLayout>
                         </LinearLayout>
-                        <LinearLayout
-                            android:id="@+id/r3ton4qojkfr"
+
+                        <EditText
+                            android:id="@+id/et_code_input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                            <LinearLayout
-                                android:id="@+id/rcjw75hxom1j"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="18dp"
-                                android:orientation="horizontal">
-                                <LinearLayout
-                                    android:id="@+id/rnocw0k1xys"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="center_horizontal"
-                                    android:background="@drawable/s12110d66sw1cr50"
-                                    android:paddingVertical="11dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:orientation="vertical">
-                                    <TextView
-                                        android:id="@+id/r44kjydn2qca"
-                                        android:textColor="#5A5E60"
-                                        android:textSize="20sp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_width="wrap_content"
-                                        android:text="0"
-                                        />
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:id="@+id/rs5tqu4426x"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="center_horizontal"
-                                    android:background="@drawable/s12110d66sw1cr50"
-                                    android:paddingVertical="11dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:orientation="vertical">
-                                    <TextView
-                                        android:id="@+id/rrqkmgdlzal"
-                                        android:textColor="#5A5E60"
-                                        android:textSize="20sp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_width="wrap_content"
-                                        android:text="1"
-                                        />
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:id="@+id/r66vl0fwgcsb"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="center_horizontal"
-                                    android:background="@drawable/s12110d66sw1cr50"
-                                    android:paddingVertical="11dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:orientation="vertical">
-                                    <TextView
-                                        android:id="@+id/rxlttna1huz"
-                                        android:textColor="#5A5E60"
-                                        android:textSize="20sp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_width="wrap_content"
-                                        android:text="2"
-                                        />
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:id="@+id/rxqad701091r"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="center_horizontal"
-                                    android:background="@drawable/s12110d66sw1cr50"
-                                    android:paddingVertical="11dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:orientation="vertical">
-                                    <TextView
-                                        android:id="@+id/rka2ohf51iu"
-                                        android:textColor="#5A5E60"
-                                        android:textSize="20sp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_width="wrap_content"
-                                        android:text="3"
-                                        />
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:id="@+id/rf33fh27khgo"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="center_horizontal"
-                                    android:background="@drawable/s12110d66sw1cr50"
-                                    android:paddingVertical="11dp"
-                                    android:layout_marginEnd="16dp"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:orientation="vertical">
-                                    <TextView
-                                        android:id="@+id/r5ck71m6ivsf"
-                                        android:textColor="#5A5E60"
-                                        android:textSize="20sp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_width="wrap_content"
-                                        android:text="4"
-                                        />
-                                </LinearLayout>
-                                <LinearLayout
-                                    android:id="@+id/rri2pqdwm6jg"
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:gravity="center_horizontal"
-                                    android:background="@drawable/s12110d66sw1cr50"
-                                    android:paddingVertical="11dp"
-                                    android:clickable="true"
-                                    android:focusable="true"
-                                    android:orientation="vertical">
-                                    <TextView
-                                        android:id="@+id/rio04d1jj3lk"
-                                        android:textColor="#5A5E60"
-                                        android:textSize="20sp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_width="wrap_content"
-                                        android:text="5"
-                                        />
-                                </LinearLayout>
-                            </LinearLayout>
-                            <TextView
-                                android:id="@+id/rryo3z94zjtp"
-                                android:textColor="#12110D"
-                                android:textSize="18sp"
-                                android:layout_height="wrap_content"
-                                android:layout_width="wrap_content"
-                                android:text="You can resend the code in 24 seconds"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_marginBottom="15dp"                                />
-                        </LinearLayout>
+                            android:hint="Enter 6-digit SMS code"
+                            android:inputType="number"
+                            android:gravity="center"
+                            android:maxLength="6"
+                            android:letterSpacing="0.2"
+                            android:textSize="24sp"
+                            android:background="@android:color/transparent"
+                            android:paddingVertical="15dp"
+                            android:layout_marginBottom="20dp"/>
+
+                        <TextView
+                            android:id="@+id/rryo3z94zjtp"
+                            android:textColor="#12110D"
+                            android:textSize="18sp"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:text="You can resend the code in 24 seconds"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginBottom="15dp" />
+
                         <LinearLayout
                             android:id="@+id/r9p525jbg3i7"
                             android:layout_width="match_parent"
@@ -250,6 +137,7 @@
                             android:clickable="true"
                             android:focusable="true"
                             android:orientation="vertical">
+
                             <TextView
                                 android:id="@+id/rnpb4jf1dnno"
                                 android:textColor="#FFFFFF"
@@ -257,8 +145,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_width="40dp"
                                 android:gravity="center"
-                                android:text="Next"
-                                />
+                                android:text="Next" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
