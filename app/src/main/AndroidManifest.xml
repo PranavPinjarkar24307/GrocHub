@@ -30,6 +30,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GrocHub">
         <activity
+            android:name=".AboutActivity"
+            android:exported="false" />
+        <activity
             android:name=".NumberEnterVerification"
             android:exported="false" />
         <activity

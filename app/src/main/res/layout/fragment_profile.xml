@@ -108,29 +108,66 @@
 
             <TextView
                 android:id="@+id/address_button"
-                style="@style/ProfileMenuOption"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:drawablePadding="16dp"
+                android:text="Delivery Address"
+                android:textColor="@color/black"
+                android:textSize="16sp"
                 android:drawableStart="@android:drawable/ic_menu_directions"
-                android:text="Delivery Address" />
+                android:drawableEnd="@drawable/ic_arrow_right_24" />
 
-            <View style="@style/ProfileDivider"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"/>
 
             <TextView
                 android:id="@+id/order_history_button"
-                style="@style/ProfileMenuOption"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:drawablePadding="16dp"
+                android:text="Order History"
+                android:textColor="@color/black"
+                android:textSize="16sp"
                 android:drawableStart="@android:drawable/ic_menu_recent_history"
-                android:text="Order History" />
+                android:drawableEnd="@drawable/ic_arrow_right_24" />
 
-            <View style="@style/ProfileDivider"/>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"/>
 
             <TextView
                 android:id="@+id/help_button"
-                style="@style/ProfileMenuOption"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:drawablePadding="16dp"
+                android:text="Help &amp; Support"
+                android:textColor="@color/black"
+                android:textSize="16sp"
                 android:drawableStart="@android:drawable/ic_menu_help"
-                android:text="Help &amp; Support" />
+                android:drawableEnd="@drawable/ic_arrow_right_24" />
 
-        </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
+        </LinearLayout>        <com.google.android.material.button.MaterialButton
             android:id="@+id/logout_button"
             android:layout_width="match_parent"
             android:layout_height="56dp"
