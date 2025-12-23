@@ -7,7 +7,6 @@
 
     <!-- ======= SCROLLABLE CONTENT ======= -->
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/scrollContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottomButtons"
@@ -116,7 +115,6 @@
                         android:textStyle="bold" />
 
                     <TextView
-                        android:id="@+id/tv_product_tag"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
@@ -143,7 +141,6 @@
                         />
 
                     <TextView
-                        android:id="@+id/tv_rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
@@ -189,7 +186,6 @@
                         android:textSize="14sp" />
 
                     <LinearLayout
-                        android:id="@+id/ll_quantity"
                         android:layout_width="wrap_content"
                         android:layout_height="36dp"
                         android:background="@drawable/qty_box_bg"
@@ -258,7 +254,6 @@
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/btn_buy_now"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_marginStart="8dp"

@@ -9,7 +9,6 @@
 
     <!-- Screen Title -->
     <TextView
-        android:id="@+id/tv_orders_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="My Orders"

@@ -9,12 +9,10 @@
     android:layout_height="match_parent"
     >
     <LinearLayout
-        android:id="@+id/rrnu6kq9zva"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
         <RelativeLayout
-            android:id="@+id/rsh3oslv97dq_rl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
@@ -41,7 +39,6 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/rw6l6qafrvvr"
                     android:textColor="@color/white"
                     android:textSize="34sp"
                     android:textStyle="bold"
@@ -63,7 +60,6 @@
             </LinearLayout>
         </RelativeLayout>
         <TextView
-            android:id="@+id/rjwma1m32ywa"
             android:textColor="#333333"
             android:textSize="14sp"
             android:layout_marginBottom="7dp"
@@ -88,7 +84,6 @@
             android:paddingHorizontal="13dp"
             />
         <TextView
-            android:id="@+id/rwekxyljtme"
             android:textColor="#333333"
             android:textSize="14sp"
             android:layout_marginBottom="7dp"
@@ -98,7 +93,6 @@
             android:text="Password"
             />
         <LinearLayout
-            android:id="@+id/ra41e5oc1vz"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -128,14 +122,13 @@
                 android:padding="2dp"/>
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/r0xhf2dbjr3sr"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="end"
             android:layout_marginBottom="18dp"
             android:orientation="vertical">
             <TextView
-                android:id="@+id/tv_forgot_password" android:textColor="#0EB176"
+                android:textColor="#0EB176"
                 android:textSize="10sp"
                 android:layout_marginEnd="23dp"
                 android:layout_height="wrap_content"
@@ -156,7 +149,6 @@
             android:focusable="true"
             android:orientation="vertical">
             <TextView
-                android:id="@+id/ri0frs25g1ml"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -166,19 +158,16 @@
                 />
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/rvgqrffpikgf"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:layout_marginBottom="102dp"
             android:orientation="vertical">
             <LinearLayout
-                android:id="@+id/rkfbc9gcbqe"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
                 <TextView
-                    android:id="@+id/ra5uryp70f6"
                     android:textColor="#0EB176"
                     android:textSize="12sp"
                     android:layout_marginEnd="7dp"
@@ -187,7 +176,7 @@
                     android:text="Not have an account?"
                     />
                 <TextView
-                    android:id="@+id/tv_register_link" android:textColor="#0EB176"
+                    android:textColor="#0EB176"
                     android:textSize="12sp"
                     android:textStyle="bold"
                     android:layout_height="wrap_content"

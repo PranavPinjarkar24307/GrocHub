@@ -2,14 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layout_welcome_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/welcome_page_background"
     android:orientation="vertical">
 
     <LinearLayout
-        android:id="@+id/layout_content_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -17,7 +15,6 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/layout_logo_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -25,7 +22,6 @@
             android:background="@drawable/applogowithname"
             android:orientation="vertical" />
         <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/img_welcome_illustration"
             android:layout_width="272dp"
             android:layout_height="239dp"
             android:layout_marginTop="50dp"
@@ -49,7 +45,6 @@
             android:paddingVertical="16dp">
 
             <TextView
-                android:id="@+id/tv_login_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Login"
@@ -72,7 +67,6 @@
             android:paddingVertical="16dp">
 
             <TextView
-                android:id="@+id/tv_register_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Register"
@@ -82,7 +76,6 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layout_or_login_with"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -91,7 +84,6 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:id="@+id/line_left"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_marginEnd="11dp"
@@ -100,7 +92,6 @@
                 android:orientation="vertical" />
 
             <LinearLayout
-                android:id="@+id/layout_or_text_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="12dp"
@@ -108,7 +99,6 @@
                 android:paddingBottom="1dp">
 
                 <TextView
-                    android:id="@+id/tv_or_login_with"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Or login with"
@@ -117,7 +107,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/line_right"
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1"
@@ -137,7 +126,6 @@
             android:paddingVertical="10dp">
 
             <TextView
-                android:id="@+id/tv_social_google"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Google"
