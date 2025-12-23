@@ -2,78 +2,147 @@ package com.example.grochub.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.grochub.AddressActivity;
 import com.example.grochub.MainActivity;
 import com.example.grochub.R;
 import com.example.grochub.WelcomePage;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProfileFragment extends Fragment {
 
-    private View orderHistoryButton;
-    private View addressButton; // We will link this to the clickable text
-    private Button logoutButton;
+    // ================= UI =================
     private TextView tvName, tvEmail;
+    private ImageView ivProfileImage, ivSettings;
+    private View btnAddress, btnOrders, btnHelp;
+    private MaterialButton btnLogout;
+
+    // ================= FIREBASE =================
+    private FirebaseAuth auth;
+    private FirebaseFirestore db;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
 
-        // 1. Initialize Views
-        orderHistoryButton = view.findViewById(R.id.order_history_button);
+        // 1️⃣ Firebase init
+        auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
-        // ⭐ FIX: We target the TextView ID 'address_button' instead of the card
-        addressButton = view.findViewById(R.id.address_button);
-
-        logoutButton = view.findViewById(R.id.logout_button);
+        // 2️⃣ View binding (must match XML ids)
         tvName = view.findViewById(R.id.profile_name);
         tvEmail = view.findViewById(R.id.profile_email);
+        ivProfileImage = view.findViewById(R.id.profile_image);
+        ivSettings = view.findViewById(R.id.iv_settings);
 
+        btnAddress = view.findViewById(R.id.address_button);
+        btnOrders = view.findViewById(R.id.order_history_button);
+        btnHelp = view.findViewById(R.id.help_button); // optional
+        btnLogout = view.findViewById(R.id.logout_button);
+
+        // 3️⃣ Load profile data
         loadUserProfile();
 
-        // 2. Setup Address Click Listener
-        addressButton.setOnClickListener(v -> {
-            if (getActivity() != null) {
-                Intent intent = new Intent(getActivity(), AddressActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        // 3. Other Listeners
-        orderHistoryButton.setOnClickListener(v -> {
-            if (getActivity() != null) {
-                ((MainActivity) getActivity()).openOrderHistory();
-            }
-        });
-
-        logoutButton.setOnClickListener(v -> logoutUser());
+        // 4️⃣ Click listeners
+        setupClickListeners();
 
         return view;
     }
 
-    private void loadUserProfile() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            tvEmail.setText(user.getEmail() != null ? user.getEmail() : "");
-            tvName.setText(user.getDisplayName() != null ? user.getDisplayName() : "User");
+    // ================= CLICK LISTENERS =================
+    private void setupClickListeners() {
+
+        // Address
+        btnAddress.setOnClickListener(v ->
+                startActivity(new Intent(getActivity(), AddressActivity.class)));
+
+        // Order History
+        btnOrders.setOnClickListener(v -> {
+            if (getActivity() instanceof MainActivity) {
+                ((MainActivity) getActivity()).openOrderHistory();
+            } else {
+                Toast.makeText(getContext(), "Order history not available", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Settings / Edit Profile
+        ivSettings.setOnClickListener(v ->
+                        Toast.makeText(getContext(), "Edit Profile (Coming Soon)", Toast.LENGTH_SHORT).show()
+                // startActivity(new Intent(getActivity(), EditProfileActivity.class))
+        );
+
+        // Help (optional)
+        if (btnHelp != null) {
+            btnHelp.setOnClickListener(v ->
+                    Toast.makeText(getContext(), "Support coming soon", Toast.LENGTH_SHORT).show());
         }
+
+        // Logout
+        btnLogout.setOnClickListener(v -> logoutUser());
     }
 
+    // ================= LOAD USER =================
+    private void loadUserProfile() {
+
+        FirebaseUser user = auth.getCurrentUser();
+        if (user == null) return;
+
+        String uid = user.getUid();
+
+        // Fast load from Auth
+        if (user.getEmail() != null) tvEmail.setText(user.getEmail());
+        if (user.getDisplayName() != null) tvName.setText(user.getDisplayName());
+
+        // Full load from Firestore
+        db.collection("users").document(uid).get()
+                .addOnSuccessListener(document -> {
+                    if (!isAdded() || !document.exists()) return;
+
+                    String name = document.getString("name");
+                    String email = document.getString("email");
+                    String imageUrl = document.getString("profileImage");
+
+                    if (name != null && !name.isEmpty()) tvName.setText(name);
+                    if (email != null && !email.isEmpty()) tvEmail.setText(email);
+
+                    if (imageUrl != null && !imageUrl.isEmpty()) {
+                        Glide.with(this)
+                                .load(imageUrl)
+                                .placeholder(android.R.drawable.sym_def_app_icon)
+                                .error(android.R.drawable.sym_def_app_icon)
+                                .into(ivProfileImage);
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Log.e("ProfileFragment", "Failed to load user", e));
+    }
+
+    // ================= LOGOUT =================
     private void logoutUser() {
         if (getActivity() == null) return;
-        FirebaseAuth.getInstance().signOut();
+
+        auth.signOut();
+
         Intent intent = new Intent(getActivity(), WelcomePage.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);

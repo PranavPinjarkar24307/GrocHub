@@ -73,11 +73,11 @@
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:layout_marginEnd="15dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/history"
                     android:clickable="true"
                     android:focusable="true"
-                    android:src="@drawable/baseline_mail_outline_24"
-                    android:scaleType="fitXY" />
+                    android:scaleType="fitXY"
+                    app:tint="@color/white" />
 
                 <ImageView
                     android:id="@+id/iv_notification_icon"

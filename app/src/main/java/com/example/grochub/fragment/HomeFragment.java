@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
@@ -28,12 +29,12 @@ import com.example.grochub.Categories;
 import com.example.grochub.R;
 import com.example.grochub.SearchActivity;
 import com.example.grochub.adapter.HomeSliderAdapter;
+import com.example.grochub.adapter.PopularItemAdapter;
 import com.example.grochub.adapter.SpecialDealAdapter;
 import com.example.grochub.model.HomeSliderModel;
+import com.example.grochub.model.PopularItemModel;
 import com.example.grochub.model.SpecialDealModel;
 import com.google.firebase.auth.FirebaseAuth;
-// ⭐ REMOVED Realtime Database Imports
-// ⭐ ADDED Firestore Imports
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -59,27 +60,112 @@ public class HomeFragment extends Fragment {
     private SpecialDealAdapter specialDealAdapter;
     private final List<SpecialDealModel> specialDealList = new ArrayList<>();
 
+    // ================= POPULAR ITEMS =================
+    private RecyclerView rvPopular;
+    private PopularItemAdapter popularAdapter;
+    private final List<PopularItemModel> popularList = new ArrayList<>();
+
+    // ================= POPULAR REALTIME =================
+    private ListenerRegistration popularListener;
+
+
     // ================= ADDRESS =================
     private TextView tvDeliveryAddress;
     private ImageView ivDropdownArrow;
     private String fullAddressDetails = "";
     private ListenerRegistration addressListener; // To stop listening when fragment closes
 
+    // ================= FIREBASE =================
+    private FirebaseFirestore db;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        // 1. Initialize Firestore
+        db = FirebaseFirestore.getInstance();
+
+        // 2. Init UI Components
         initSlider(view);
         initSearchBar(view);
         initCategories(view);
         initSpecialDeals(view);
-
+        initPopularItems(view); // <--- Added this call
         initAddress(view);
 
         return view;
     }
 
+    // ================= POPULAR ITEMS LOGIC =================
+    private void initPopularItems(View view) {
+
+        rvPopular = view.findViewById(R.id.rv_popular_items);
+        if (rvPopular == null) return;
+
+        rvPopular.setLayoutManager(
+                new GridLayoutManager(getContext(), 2)
+        );
+
+        popularAdapter = new PopularItemAdapter(getContext(), popularList);
+        rvPopular.setAdapter(popularAdapter);
+
+        // ✅ CALL HERE (AFTER adapter set)
+        loadPopularItemsRealtime();
+    }
+
+
+    private void loadPopularItems() {
+
+        db.collection("products")
+                .whereEqualTo("isPopular", true)
+                .limit(10)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+
+                    if (!isAdded() || popularAdapter == null) return;
+
+                    popularList.clear();
+
+                    for (DocumentSnapshot doc : snapshot) {
+                        PopularItemModel model = doc.toObject(PopularItemModel.class);
+                        if (model != null) {
+                            model.setId(doc.getId()); // 🔥 needed for product detail
+                            popularList.add(model);
+                        }
+                    }
+
+                    popularAdapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e ->
+                        Log.e("POPULAR", "Load failed", e));
+    }
+
+    private void loadPopularItemsRealtime() {
+
+        popularListener = db.collection("products")
+                .whereEqualTo("isPopular", true)
+                .addSnapshotListener((snap, e) -> {
+
+                    if (e != null || !isAdded() || snap == null || popularAdapter == null) {
+                        return;
+                    }
+
+                    popularList.clear();
+
+                    for (DocumentSnapshot doc : snap) {
+                        PopularItemModel model = doc.toObject(PopularItemModel.class);
+                        if (model != null) {
+                            model.setId(doc.getId());
+                            popularList.add(model);
+                        }
+                    }
+
+                    popularAdapter.notifyDataSetChanged();
+                });
+    }
+
+    // ================= ADDRESS LOGIC =================
     private void initAddress(View view) {
         tvDeliveryAddress = view.findViewById(R.id.tv_delivery_address);
         ivDropdownArrow = view.findViewById(R.id.iv_location_dropdown_arrow);
@@ -108,7 +194,6 @@ public class HomeFragment extends Fragment {
                 .show();
     }
 
-    // ⭐ UPDATED FOR FIRESTORE (Matching your AddressActivity)
     private void loadUserAddress() {
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid == null) {
@@ -117,8 +202,7 @@ public class HomeFragment extends Fragment {
         }
 
         // Listen to: users -> [uid]
-        addressListener = FirebaseFirestore.getInstance()
-                .collection("users")
+        addressListener = db.collection("users")
                 .document(uid)
                 .addSnapshotListener(new EventListener<DocumentSnapshot>() {
                     @Override
@@ -129,7 +213,6 @@ public class HomeFragment extends Fragment {
                         }
 
                         if (snapshot != null && snapshot.exists()) {
-                            // The address is saved as a Map inside the "address" field
                             Map<String, Object> addressMap = (Map<String, Object>) snapshot.get("address");
 
                             if (addressMap != null) {
@@ -170,7 +253,7 @@ public class HomeFragment extends Fragment {
                 });
     }
 
-    // ================= SLIDER =================
+    // ================= SLIDER LOGIC =================
     private void initSlider(View view) {
         homeSlider = view.findViewById(R.id.homeSlider);
         sliderDots = view.findViewById(R.id.sliderDots);
@@ -206,8 +289,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadHomeSliders() {
-        FirebaseFirestore.getInstance()
-                .collection("home_sliders")
+        db.collection("home_sliders")
                 .whereEqualTo("active", true)
                 .orderBy("order")
                 .get()
@@ -229,7 +311,6 @@ public class HomeFragment extends Fragment {
                 .addOnFailureListener(e -> Log.e("Firebase", "Slider load failed", e));
     }
 
-    // ================= DOTS =================
     private void setupDots(int count) {
         if (!isAdded() || getContext() == null) return;
 
@@ -278,19 +359,27 @@ public class HomeFragment extends Fragment {
     // ================= SEARCH =================
     private void initSearchBar(View view) {
         View searchClickLayer = view.findViewById(R.id.search_click_layer);
-        searchClickLayer.setOnClickListener(v -> {
-            if (!isAdded()) return;
-            startActivity(new Intent(getActivity(), SearchActivity.class));
-        });
+        if (searchClickLayer != null) {
+            searchClickLayer.setOnClickListener(v -> {
+                if (!isAdded()) return;
+                startActivity(new Intent(getActivity(), SearchActivity.class));
+            });
+        }
     }
 
     // ================= CATEGORIES =================
     private void initCategories(View view) {
-        view.findViewById(R.id.category_vegetables).setOnClickListener(v -> openCategory("vegetables"));
-        view.findViewById(R.id.category_fruits).setOnClickListener(v -> openCategory("fruits"));
-        view.findViewById(R.id.category_meat_eggs).setOnClickListener(v -> openCategory("meat_eggs"));
-        view.findViewById(R.id.category_drinks).setOnClickListener(v -> openCategory("drinks"));
-        view.findViewById(R.id.category_bakery).setOnClickListener(v -> openCategory("bakery"));
+        View veg = view.findViewById(R.id.category_vegetables);
+        View fruit = view.findViewById(R.id.category_fruits);
+        View meat = view.findViewById(R.id.category_meat_eggs);
+        View drink = view.findViewById(R.id.category_drinks);
+        View bakery = view.findViewById(R.id.category_bakery);
+
+        if (veg != null) veg.setOnClickListener(v -> openCategory("vegetables"));
+        if (fruit != null) fruit.setOnClickListener(v -> openCategory("fruits"));
+        if (meat != null) meat.setOnClickListener(v -> openCategory("meat_eggs"));
+        if (drink != null) drink.setOnClickListener(v -> openCategory("drinks"));
+        if (bakery != null) bakery.setOnClickListener(v -> openCategory("bakery"));
     }
 
     private void openCategory(String categoryId) {
@@ -300,11 +389,13 @@ public class HomeFragment extends Fragment {
         startActivity(intent);
     }
 
-    // ================= SPECIAL DEALS =================
+    // ================= SPECIAL DEALS LOGIC =================
     private void initSpecialDeals(View view) {
         if (!isAdded() || getContext() == null) return;
 
         rvSpecialDeals = view.findViewById(R.id.rv_special_deals);
+        if (rvSpecialDeals == null) return;
+
         rvSpecialDeals.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
 
         specialDealAdapter = new SpecialDealAdapter(getContext(), specialDealList);
@@ -314,8 +405,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadSpecialDeals() {
-        FirebaseFirestore.getInstance()
-                .collection("products")
+        db.collection("products")
                 .whereEqualTo("isSpecial", true)
                 .limit(10)
                 .get()
@@ -334,6 +424,7 @@ public class HomeFragment extends Fragment {
                 });
     }
 
+    // ================= LIFECYCLE =================
     @Override
     public void onPause() {
         super.onPause();
@@ -344,9 +435,14 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         sliderHandler.removeCallbacksAndMessages(null);
-        // Clean up listener to prevent leaks
+
         if (addressListener != null) {
             addressListener.remove();
         }
+
+        if (popularListener != null) {
+            popularListener.remove();
+        }
     }
+
 }
