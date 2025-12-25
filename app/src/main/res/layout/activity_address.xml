@@ -4,22 +4,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:layout_marginTop="30dp"
+        android:padding="20dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add Address"
+            android:text="----------- Add Address -----------"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="24dp"
+            android:layout_gravity="center_horizontal"/>
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btn_current_location"
@@ -60,7 +63,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="----------Enter Address Manually----------"
+            android:text="---------- Enter Address Manually ----------"
             android:textSize="16sp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="20dp" />
@@ -121,27 +124,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Pincode"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="25dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_pin_code"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Phone Number"
-            android:layout_marginBottom="32dp">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/et_phone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="phone"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
