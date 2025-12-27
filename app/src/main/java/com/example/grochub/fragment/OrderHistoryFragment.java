@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -25,6 +26,7 @@ public class OrderHistoryFragment extends Fragment {
 
     private RecyclerView rvOrders;
     private TextView tvEmpty;
+    private ImageView btnBack;
 
     private final List<OrderModel> orderList = new ArrayList<>();
     private OrderAdapter adapter;
@@ -38,9 +40,19 @@ public class OrderHistoryFragment extends Fragment {
     ) {
         View view = inflater.inflate(R.layout.fragment_order_history, container, false);
 
+        // ===== INIT VIEWS =====
         rvOrders = view.findViewById(R.id.rv_orders);
         tvEmpty = view.findViewById(R.id.tv_empty_orders);
+        btnBack = view.findViewById(R.id.btn_back);
 
+        // ===== BACK BUTTON =====
+        btnBack.setOnClickListener(v -> {
+            if (getParentFragmentManager().getBackStackEntryCount() > 0) {
+                getParentFragmentManager().popBackStack();
+            }
+        });
+
+        // ===== RECYCLER VIEW =====
         rvOrders.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new OrderAdapter(orderList);
         rvOrders.setAdapter(adapter);
@@ -50,7 +62,10 @@ public class OrderHistoryFragment extends Fragment {
         return view;
     }
 
+    // ===== LOAD ORDERS FROM FIREBASE =====
     private void loadOrders() {
+
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -59,25 +74,20 @@ public class OrderHistoryFragment extends Fragment {
                 .document(uid)
                 .collection("orders")
                 .orderBy("createdAt")
-                .addSnapshotListener((value, error) -> {
+                .addSnapshotListener((snapshot, error) -> {
 
-                    if (error != null || value == null) return;
+                    if (error != null || snapshot == null) return;
 
                     orderList.clear();
 
-                    for (var doc : value.getDocuments()) {
+                    snapshot.getDocuments().forEach(doc -> {
                         OrderModel order = doc.toObject(OrderModel.class);
                         if (order != null) {
                             orderList.add(order);
                         }
-                    }
+                    });
 
-                    if (orderList.isEmpty()) {
-                        tvEmpty.setVisibility(View.VISIBLE);
-                    } else {
-                        tvEmpty.setVisibility(View.GONE);
-                    }
-
+                    tvEmpty.setVisibility(orderList.isEmpty() ? View.VISIBLE : View.GONE);
                     adapter.notifyDataSetChanged();
                 });
     }
