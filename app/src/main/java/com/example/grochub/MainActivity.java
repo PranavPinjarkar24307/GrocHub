@@ -3,6 +3,7 @@ package com.example.grochub;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNav = findViewById(R.id.bottomNav);
 
+        // ================= BOTTOM NAV =================
         bottomNav.setOnItemSelectedListener(item -> {
 
             Fragment fragment = null;
@@ -55,17 +57,48 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+        // ================= INITIAL SCREEN =================
         if (savedInstanceState == null) {
             boolean openCart = getIntent().getBooleanExtra("open_cart", false);
-
-            if (openCart) {
-                bottomNav.setSelectedItemId(R.id.menu_cart);
-            } else {
-                bottomNav.setSelectedItemId(R.id.menu_home);
-            }
+            bottomNav.setSelectedItemId(
+                    openCart ? R.id.menu_cart : R.id.menu_home
+            );
         }
+
+        // ================= BACK STACK LISTENER =================
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            Fragment current =
+                    getSupportFragmentManager().findFragmentById(R.id.main_container);
+
+            if (current instanceof HomeFragment) {
+                bottomNav.setSelectedItemId(R.id.menu_home);
+            } else if (current instanceof CartFragment) {
+                bottomNav.setSelectedItemId(R.id.menu_cart);
+            } else if (current instanceof WishlistFragment) {
+                bottomNav.setSelectedItemId(R.id.menu_wishlist);
+            } else if (current instanceof ProfileFragment) {
+                bottomNav.setSelectedItemId(R.id.menu_profile);
+            }
+            // ❗ OrderHistoryFragment → bottom nav unchanged
+        });
+
+        // ================= MODERN BACK HANDLING =================
+        getOnBackPressedDispatcher().addCallback(this,
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+
+                        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                            getSupportFragmentManager().popBackStack();
+                        } else {
+                            // Home screen → send app to background (best UX)
+                            moveTaskToBack(true);
+                        }
+                    }
+                });
     }
 
+    // ================= LOAD MAIN FRAGMENTS =================
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -73,7 +106,8 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    // 🔥 ORDER HISTORY (SECONDARY SCREEN)
+    // ================= ORDER HISTORY =================
+    // Called from HomeFragment & ProfileFragment
     public void openOrderHistory() {
         getSupportFragmentManager()
                 .beginTransaction()

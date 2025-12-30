@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.grochub.AboutActivity;
 import com.example.grochub.AddressActivity;
 import com.example.grochub.MainActivity;
 import com.example.grochub.R;
@@ -91,10 +92,13 @@ public class ProfileFragment extends Fragment {
                 // startActivity(new Intent(getActivity(), EditProfileActivity.class))
         );
 
-        // Help (optional)
+        // Help & Support Button Logic
         if (btnHelp != null) {
-            btnHelp.setOnClickListener(v ->
-                    Toast.makeText(getContext(), "Support coming soon", Toast.LENGTH_SHORT).show());
+            btnHelp.setOnClickListener(v -> {
+                // This opens the static About/Help screen you created earlier
+                Intent intent = new Intent(getActivity(), AboutActivity.class);
+                startActivity(intent);
+            });
         }
 
         // Logout

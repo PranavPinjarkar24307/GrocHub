@@ -8,13 +8,11 @@
     >
 
     <LinearLayout
-        android:id="@+id/ll_home_content_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/ll_header_area"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -22,7 +20,6 @@
             >
 
             <ImageView
-                android:id="@+id/iv_app_logo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/applogowithname"
@@ -31,7 +28,6 @@
                 android:layout_marginBottom="11dp" />
 
             <LinearLayout
-                android:id="@+id/ll_search_notification_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -40,7 +36,6 @@
                 android:orientation="horizontal">
 
                 <FrameLayout
-                    android:id="@+id/search_container"
                     android:layout_width="0dp"
                     android:layout_height="36dp"
                     android:layout_weight="1"
@@ -69,7 +64,7 @@
 
 
                 <ImageView
-                    android:id="@+id/iv_mail_icon"
+                    android:id="@+id/order_history_button"
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:layout_marginEnd="15dp"
@@ -80,7 +75,6 @@
                     app:tint="@color/white" />
 
                 <ImageView
-                    android:id="@+id/iv_notification_icon"
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
@@ -91,7 +85,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/ll_delivery_location_row"
                 android:layout_width="match_parent"
                 android:layout_height="16dp"
                 android:layout_marginBottom="10dp"
@@ -100,7 +93,6 @@
                 android:layout_gravity="center_horizontal">
 
                 <FrameLayout
-                    android:id="@+id/ll_location_details"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:clickable="true"
@@ -108,7 +100,6 @@
                     android:background="?attr/selectableItemBackground">
 
                     <LinearLayout
-                        android:id="@+id/ll_address_container"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
@@ -118,7 +109,6 @@
                         android:background="?attr/selectableItemBackground">
 
                         <ImageView
-                            android:id="@+id/iv_location_pin_icon"
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:layout_marginEnd="4dp"
@@ -126,7 +116,6 @@
                             android:scaleType="fitXY" />
 
                         <TextView
-                            android:id="@+id/tv_sent_to_label"
                             android:textColor="#FFFFFF"
                             android:textSize="12sp"
                             android:layout_height="wrap_content"

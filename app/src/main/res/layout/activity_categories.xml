@@ -10,7 +10,6 @@
 
     <!-- TOP SEARCH BAR + ICONS -->
     <LinearLayout
-        android:id="@+id/ll_search_notification_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
@@ -30,7 +29,6 @@
             app:tint="@color/black" />
 
         <FrameLayout
-            android:id="@+id/search_container"
             android:layout_width="0dp"
             android:layout_height="36dp"
             android:layout_weight="1"

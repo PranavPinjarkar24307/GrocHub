@@ -9,7 +9,6 @@
     android:layout_height="match_parent">
 
     <ScrollView
-        android:id="@+id/ri8fj8ty0p49"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
@@ -21,7 +20,6 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/rm9wzklcekw"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
@@ -30,7 +28,6 @@
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:id="@+id/r7eqzi0csuka"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
@@ -46,27 +43,23 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/rhqbzkliqr46"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
                     <LinearLayout
-                        android:id="@+id/rp0blm0s9w7"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="32dp"
                         android:orientation="vertical">
 
                         <LinearLayout
-                            android:id="@+id/rkztkocqxnh"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginBottom="32dp"
                             android:orientation="vertical">
 
                             <TextView
-                                android:id="@+id/ryxw8o9u1twi"
                                 android:textColor="#12110D"
                                 android:textSize="22sp"
                                 android:textStyle="bold"
@@ -76,14 +69,12 @@
                                 android:text="Enter the Code" />
 
                             <LinearLayout
-                                android:id="@+id/r0dgkrgimbpx8"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:paddingBottom="5dp"
                                 android:orientation="vertical">
 
                                 <TextView
-                                    android:id="@+id/rdm87at6v25r"
                                     android:textColor="#5A5E60"
                                     android:textSize="16sp"
                                     android:layout_marginBottom="11dp"
@@ -118,7 +109,6 @@
                             android:layout_marginBottom="20dp"/>
 
                         <TextView
-                            android:id="@+id/rryo3z94zjtp"
                             android:textColor="#12110D"
                             android:textSize="18sp"
                             android:layout_height="wrap_content"
@@ -139,7 +129,6 @@
                             android:orientation="vertical">
 
                             <TextView
-                                android:id="@+id/rnpb4jf1dnno"
                                 android:textColor="#FFFFFF"
                                 android:textSize="18sp"
                                 android:layout_height="wrap_content"
