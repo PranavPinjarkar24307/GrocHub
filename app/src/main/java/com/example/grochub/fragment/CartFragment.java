@@ -1,5 +1,6 @@
 package com.example.grochub.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,12 +14,11 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.grochub.CheckoutActivity;
 import com.example.grochub.R;
 import com.example.grochub.adapter.CartAdapter;
 import com.example.grochub.model.CartFirebaseModel;
-import com.example.grochub.model.OrderModel;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -31,15 +31,11 @@ public class CartFragment extends Fragment {
     private View btnCheckout;
 
     private CartAdapter adapter;
-    private final List<CartFirebaseModel> cartList = new ArrayList<>();
+    private final ArrayList<CartFirebaseModel> cartList = new ArrayList<>(); // Changed List to ArrayList for Parcelable
 
     @Nullable
     @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState
-    ) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
 
         rvCartItems = view.findViewById(R.id.rv_cart_items);
@@ -64,11 +60,7 @@ public class CartFragment extends Fragment {
         return view;
     }
 
-    // ================================
-    // LOAD CART FROM FIREBASE
-    // ================================
     private void loadCartFromFirebase() {
-
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         FirebaseFirestore.getInstance()
@@ -76,26 +68,24 @@ public class CartFragment extends Fragment {
                 .document(uid)
                 .collection("cart")
                 .addSnapshotListener((value, error) -> {
-
                     if (error != null || value == null) return;
 
                     cartList.clear();
                     int total = 0;
 
                     for (var doc : value.getDocuments()) {
-
                         CartFirebaseModel item = doc.toObject(CartFirebaseModel.class);
                         if (item == null) continue;
 
                         cartList.add(item);
 
-                        String priceStr = item.price
-                                .replace("₹", "")
-                                .split("/")[0]
-                                .trim();
-
-                        int price = Integer.parseInt(priceStr);
-                        total += price * item.quantity;
+                        String priceStr = item.price.replace("₹", "").split("/")[0].trim();
+                        try {
+                            int price = Integer.parseInt(priceStr);
+                            total += price * item.quantity;
+                        } catch (NumberFormatException e) {
+                            // Handle parsing error if price format is unexpected
+                        }
                     }
 
                     tvTotalPrice.setText("₹" + total);
@@ -103,81 +93,25 @@ public class CartFragment extends Fragment {
                 });
     }
 
-    // ================================
-    // CHECKOUT → CREATE ORDER
-    // ================================
+    // ==================================================
+    // CHECKOUT LOGIC (REDIRECT TO CHECKOUT ACTIVITY)
+    // ==================================================
     private void checkoutOrder() {
+        int totalAmt = 0;
 
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        String orderId = "order_" + System.currentTimeMillis();
-
-        OrderModel order = new OrderModel(
-                new ArrayList<>(cartList),
-                calculateTotal(cartList),
-                null,            // Firestore timestamp
-                "PROCESSING"     // ✅ order status
-        );
-
-        db.collection("users")
-                .document(uid)
-                .collection("orders")
-                .document(orderId)
-                .set(order)
-                .addOnSuccessListener(unused -> {
-                    clearFirebaseCart();
-                    Toast.makeText(getContext(), "Order placed successfully", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(), "Order failed", Toast.LENGTH_SHORT).show()
-                );
-    }
-
-    // ================================
-    // CALCULATE TOTAL
-    // ================================
-    private int calculateTotal(List<CartFirebaseModel> items) {
-
-        int total = 0;
-
-        for (CartFirebaseModel item : items) {
-            String priceStr = item.price
-                    .replace("₹", "")
-                    .split("/")[0]
-                    .trim();
-
-            int price = Integer.parseInt(priceStr);
-            total += price * item.quantity;
+        // Recalculate total just to be safe
+        for (CartFirebaseModel item : cartList) {
+            String priceStr = item.price.replace("₹", "").split("/")[0].trim();
+            try {
+                totalAmt += Integer.parseInt(priceStr) * item.quantity;
+            } catch (Exception e) {}
         }
 
-        return total;
+        // Open Checkout Activity
+        Intent intent = new Intent(getContext(), CheckoutActivity.class);
+        intent.putParcelableArrayListExtra("orderItems", cartList); // Pass Cart Items
+        intent.putExtra("totalAmount", (long) totalAmt); // Pass Total
+        intent.putExtra("fromCart", true); // Tell Checkout to clear cart after success
+        startActivity(intent);
     }
-
-    // ================================
-    // CLEAR CART AFTER ORDER
-    // ================================
-    private void clearFirebaseCart() {
-
-        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("users")
-                .document(uid)
-                .collection("cart")
-                .get()
-                .addOnSuccessListener(snapshot -> {
-                    for (var doc : snapshot.getDocuments()) {
-                        doc.getReference().delete();
-                    }
-                });
-    }
-
-    OrderModel order = new OrderModel(
-            new ArrayList<>(cartList),
-            calculateTotal(cartList),
-            null,              // Firestore timestamp
-            "PROCESSING"       // ✅ DEFAULT STATUS
-    );
-
 }

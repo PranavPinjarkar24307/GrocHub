@@ -109,6 +109,7 @@
             <TextView
                 android:id="@+id/address_button"
                 style="@style/ProfileMenuOption"
+                android:layout_width="360dp"
                 android:drawableStart="@android:drawable/ic_menu_directions"
                 android:text="Delivery Address" />
 

@@ -1,5 +1,6 @@
 package com.example.grochub;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -16,11 +17,13 @@ import com.example.grochub.util.CartManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+
 public class ProductDetailActivity extends AppCompatActivity {
 
     private ImageView ivProductImage, ivBack, ivWishlist;
     private TextView tvName, tvPrice, tvUnit, tvDescription, tvQty;
-    private TextView btnQtyMinus, btnQtyPlus, btnAddToCart;
+    private TextView btnQtyMinus, btnQtyPlus, btnAddToCart, btnBuyNow;
 
     private int quantity = 1;
 
@@ -28,7 +31,6 @@ public class ProductDetailActivity extends AppCompatActivity {
     private String productId;
     private String productUnit;
 
-    // 🔥 PRICE STORAGE
     private long normalPrice = 0;
     private long specialPrice = 0;
 
@@ -37,7 +39,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
-        // ================= VIEW BINDING =================
         ivProductImage = findViewById(R.id.iv_product_image);
         ivBack = findViewById(R.id.iv_back);
         ivWishlist = findViewById(R.id.iv_wishlist);
@@ -51,10 +52,10 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnQtyMinus = findViewById(R.id.btn_qty_minus);
         btnQtyPlus = findViewById(R.id.btn_qty_plus);
         btnAddToCart = findViewById(R.id.btn_add_to_cart);
+        btnBuyNow = findViewById(R.id.btn_buy_now);
 
         tvQty.setText(String.valueOf(quantity));
 
-        // ================= GET PRODUCT ID =================
         productId = getIntent().getStringExtra("product_id");
 
         if (productId == null || productId.isEmpty()) {
@@ -79,24 +80,16 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
 
         btnAddToCart.setOnClickListener(v -> addToCart());
+        btnBuyNow.setOnClickListener(v -> buyNowProcess());
     }
 
-    // ==================================================
-    // SAFE PRODUCT ID (🔥 IMPORTANT)
-    // ==================================================
     private String getSafeProductId() {
         return (productId != null && !productId.isEmpty())
                 ? productId
-                : tvName.getText().toString()
-                .toLowerCase()
-                .replace(" ", "_");
+                : tvName.getText().toString().toLowerCase().replace(" ", "_");
     }
 
-    // ==================================================
-    // OLD FLOW
-    // ==================================================
     private void loadOldFlowProduct() {
-
         String name = getIntent().getStringExtra("product_name");
         long price = getIntent().getLongExtra("product_price", -1);
         imageUrl = getIntent().getStringExtra("product_image");
@@ -113,28 +106,20 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvName.setText(name);
         tvPrice.setText("₹" + price);
         tvUnit.setVisibility(View.GONE);
-
         tvDescription.setText("Fresh and high-quality " + name + " delivered to your doorstep.");
         loadImage(imageUrl);
-
         checkWishlistState();
     }
 
-    // ==================================================
-    // FIRESTORE LOAD
-    // ==================================================
     private void loadProductFromFirebase() {
-
         FirebaseFirestore.getInstance()
                 .collection("products")
                 .document(productId)
                 .get()
                 .addOnSuccessListener(doc -> {
-
                     if (!doc.exists()) return;
 
                     String name = doc.getString("name");
-
                     Long np = doc.getLong("price");
                     Long sp = doc.getLong("specialPrice");
 
@@ -158,25 +143,17 @@ public class ProductDetailActivity extends AppCompatActivity {
 
                     tvDescription.setText("Fresh and high-quality " + name + " delivered to your doorstep.");
                     loadImage(imageUrl);
-
                     checkWishlistState();
                 });
     }
 
     private void loadImage(String imageUrl) {
         if (imageUrl != null && !imageUrl.isEmpty()) {
-            Glide.with(this)
-                    .load(imageUrl)
-                    .placeholder(R.drawable.gray_colour)
-                    .into(ivProductImage);
+            Glide.with(this).load(imageUrl).placeholder(R.drawable.gray_colour).into(ivProductImage);
         }
     }
 
-    // ==================================================
-    // ADD TO CART (UNCHANGED)
-    // ==================================================
     private void addToCart() {
-
         if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
 
         CartItem cartItem = new CartItem(
@@ -200,41 +177,53 @@ public class ProductDetailActivity extends AppCompatActivity {
                         tvPrice.getText().toString(),
                         imageUrl,
                         quantity
-                ));
+                ))
+                .addOnSuccessListener(v -> Toast.makeText(this, "Added to Cart", Toast.LENGTH_SHORT).show());
     }
 
     // ==================================================
-    // WISHLIST CHECK (🔥 FIXED)
+    // BUY NOW LOGIC (REDIRECT TO CHECKOUT)
     // ==================================================
-    private void checkWishlistState() {
+    private void buyNowProcess() {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
+        // 1. Calculate Price
+        long currentPrice = (specialPrice > 0) ? specialPrice : normalPrice;
+        long totalAmt = currentPrice * quantity;
+
+        // 2. Create Single Item List
+        CartFirebaseModel singleItem = new CartFirebaseModel(
+                tvName.getText().toString(),
+                "₹" + currentPrice,
+                imageUrl,
+                quantity
+        );
+        ArrayList<CartFirebaseModel> items = new ArrayList<>();
+        items.add(singleItem);
+
+        // 3. Open Checkout Activity
+        Intent intent = new Intent(this, CheckoutActivity.class);
+        intent.putParcelableArrayListExtra("orderItems", items); // Passing the list
+        intent.putExtra("totalAmount", totalAmt); // Passing total price
+        intent.putExtra("fromCart", false); // It's a direct buy
+        startActivity(intent);
+    }
+
+    private void checkWishlistState() {
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             ivWishlist.setImageResource(R.drawable.wishlisticon);
             return;
         }
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .document(uid)
-                .collection("wishlist")
-                .document(getSafeProductId())
-                .get()
-                .addOnSuccessListener(doc ->
-                        ivWishlist.setImageResource(
-                                doc.exists()
-                                        ? R.drawable.hearticon
-                                        : R.drawable.wishlisticon
-                        )
-                );
+        FirebaseFirestore.getInstance().collection("users").document(uid).collection("wishlist").document(getSafeProductId())
+                .get().addOnSuccessListener(doc -> ivWishlist.setImageResource(doc.exists() ? R.drawable.hearticon : R.drawable.wishlisticon));
     }
 
-    // ==================================================
-    // WISHLIST TOGGLE (🔥 FIXED)
-    // ==================================================
     private void toggleWishlist() {
-
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             Toast.makeText(this, "Login required", Toast.LENGTH_SHORT).show();
             return;
@@ -242,41 +231,16 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String pid = getSafeProductId();
-
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("users")
-                .document(uid)
-                .collection("wishlist")
-                .document(pid)
-                .get()
+        db.collection("users").document(uid).collection("wishlist").document(pid).get()
                 .addOnSuccessListener(doc -> {
-
                     if (doc.exists()) {
-
-                        db.collection("users")
-                                .document(uid)
-                                .collection("wishlist")
-                                .document(pid)
-                                .delete();
-
+                        db.collection("users").document(uid).collection("wishlist").document(pid).delete();
                         ivWishlist.setImageResource(R.drawable.wishlisticon);
-
                     } else {
-
-                        db.collection("users")
-                                .document(uid)
-                                .collection("wishlist")
-                                .document(pid)
-                                .set(new WishlistItem(
-                                        pid,
-                                        tvName.getText().toString(),
-                                        normalPrice,
-                                        specialPrice,
-                                        productUnit,
-                                        imageUrl
-                                ));
-
+                        db.collection("users").document(uid).collection("wishlist").document(pid)
+                                .set(new WishlistItem(pid, tvName.getText().toString(), normalPrice, specialPrice, productUnit, imageUrl));
                         ivWishlist.setImageResource(R.drawable.hearticon);
                     }
                 });

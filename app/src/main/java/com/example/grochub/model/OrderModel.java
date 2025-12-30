@@ -5,22 +5,16 @@ import java.util.List;
 
 public class OrderModel {
 
+    // Must match Firestore field names exacty
     public List<CartFirebaseModel> items;
     public int totalPrice;
     public Timestamp createdAt;
-
-    // 🔥 NEW
     public String status;
+    public String orderId;
 
-    // Required empty constructor
-    public OrderModel() {}
+    public OrderModel() {} // Empty constructor required
 
-    public OrderModel(
-            List<CartFirebaseModel> items,
-            int totalPrice,
-            Timestamp createdAt,
-            String status
-    ) {
+    public OrderModel(List<CartFirebaseModel> items, int totalPrice, Timestamp createdAt, String status) {
         this.items = items;
         this.totalPrice = totalPrice;
         this.createdAt = createdAt;
