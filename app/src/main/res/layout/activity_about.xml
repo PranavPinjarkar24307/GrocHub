@@ -125,7 +125,7 @@
             android:layout_height="wrap_content"
             android:text="© 2025 GrocHub Inc."
             android:gravity="center"
-            android:textColor="#BDBDBD"
+            android:textColor="#7C7C7C"
             android:textSize="12sp"/>
 
     </LinearLayout>

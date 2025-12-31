@@ -184,11 +184,14 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     // ==================================================
-    // ADD TO CART
+    // 🔥 ADD TO CART (WITH TOAST)
     // ==================================================
     private void addToCart() {
 
-        if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+            Toast.makeText(this, "Please login to add items", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         CartItem cartItem = new CartItem(
                 tvName.getText().toString(),
@@ -211,9 +214,16 @@ public class ProductDetailActivity extends AppCompatActivity {
                         tvPrice.getText().toString(),
                         imageUrl,
                         quantity
-                ));
+                ))
+                .addOnSuccessListener(unused ->
+                        Toast.makeText(
+                                ProductDetailActivity.this,
+                                "Added to cart",
+                                Toast.LENGTH_SHORT
+                        ).show()
+                );
     }
-
+    
     // ==================================================
     // WISHLIST CHECK
     // ==================================================
