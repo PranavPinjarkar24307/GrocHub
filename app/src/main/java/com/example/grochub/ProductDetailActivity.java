@@ -82,7 +82,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     // ==================================================
-    // SAFE PRODUCT ID (🔥 IMPORTANT)
+    // SAFE PRODUCT ID
     // ==================================================
     private String getSafeProductId() {
         return (productId != null && !productId.isEmpty())
@@ -93,7 +93,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     // ==================================================
-    // OLD FLOW
+    // OLD FLOW (FROM INTENT)
     // ==================================================
     private void loadOldFlowProduct() {
 
@@ -114,9 +114,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvPrice.setText("₹" + price);
         tvUnit.setVisibility(View.GONE);
 
-        tvDescription.setText("Fresh and high-quality " + name + " delivered to your doorstep.");
-        loadImage(imageUrl);
+        // 🔥 LONG & DYNAMIC DESCRIPTION
+        tvDescription.setText(
+                buildProductDescription(name, null, normalPrice, specialPrice)
+        );
 
+        loadImage(imageUrl);
         checkWishlistState();
     }
 
@@ -156,9 +159,17 @@ public class ProductDetailActivity extends AppCompatActivity {
                         tvUnit.setVisibility(View.GONE);
                     }
 
-                    tvDescription.setText("Fresh and high-quality " + name + " delivered to your doorstep.");
-                    loadImage(imageUrl);
+                    // 🔥 FIXED: PASS UNIT + SPECIAL PRICE
+                    tvDescription.setText(
+                            buildProductDescription(
+                                    name,
+                                    productUnit,
+                                    normalPrice,
+                                    specialPrice
+                            )
+                    );
 
+                    loadImage(imageUrl);
                     checkWishlistState();
                 });
     }
@@ -173,7 +184,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     // ==================================================
-    // ADD TO CART (UNCHANGED)
+    // ADD TO CART
     // ==================================================
     private void addToCart() {
 
@@ -204,7 +215,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     // ==================================================
-    // WISHLIST CHECK (🔥 FIXED)
+    // WISHLIST CHECK
     // ==================================================
     private void checkWishlistState() {
 
@@ -231,7 +242,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     // ==================================================
-    // WISHLIST TOGGLE (🔥 FIXED)
+    // WISHLIST TOGGLE
     // ==================================================
     private void toggleWishlist() {
 
@@ -253,17 +264,14 @@ public class ProductDetailActivity extends AppCompatActivity {
                 .addOnSuccessListener(doc -> {
 
                     if (doc.exists()) {
-
                         db.collection("users")
                                 .document(uid)
                                 .collection("wishlist")
                                 .document(pid)
                                 .delete();
-
                         ivWishlist.setImageResource(R.drawable.wishlisticon);
 
                     } else {
-
                         db.collection("users")
                                 .document(uid)
                                 .collection("wishlist")
@@ -276,9 +284,51 @@ public class ProductDetailActivity extends AppCompatActivity {
                                         productUnit,
                                         imageUrl
                                 ));
-
                         ivWishlist.setImageResource(R.drawable.hearticon);
                     }
                 });
+    }
+
+    // ==================================================
+    // 🔥 PRODUCT DESCRIPTION BUILDER
+    // ==================================================
+    private String buildProductDescription(
+            String name,
+            String unit,
+            long normalPrice,
+            long specialPrice
+    ) {
+        StringBuilder desc = new StringBuilder();
+
+        desc.append(name)
+                .append(" is a premium quality product, carefully selected and packed to ensure freshness and superior taste.\n\n");
+
+        if (unit != null && !unit.isEmpty()) {
+            desc.append("• Pack Size: ").append(unit).append("\n");
+        }
+
+        if (specialPrice > 0) {
+            desc.append("• Special Offer Price: ₹")
+                    .append(specialPrice)
+                    .append(" (Limited time deal)\n");
+        } else {
+            desc.append("• Price: ₹")
+                    .append(normalPrice)
+                    .append("\n");
+        }
+
+        desc.append("\nPerfect for daily household use. ")
+                .append(name)
+                .append(" is hygienically packed and ideal for cooking, storage, and long-lasting freshness.\n\n");
+
+        desc.append("✔ 100% quality checked\n")
+                .append("✔ Freshly sourced\n")
+                .append("✔ Trusted by thousands of customers\n\n");
+
+        desc.append("Order now and get ")
+                .append(name)
+                .append(" delivered quickly and safely to your doorstep.");
+
+        return desc.toString();
     }
 }
