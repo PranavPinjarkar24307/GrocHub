@@ -1,5 +1,6 @@
 package com.example.grochub;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -95,6 +96,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     // ==================================================
     // OLD FLOW (FROM INTENT)
     // ==================================================
+    @SuppressLint("SetTextI18n")
     private void loadOldFlowProduct() {
 
         String name = getIntent().getStringExtra("product_name");
@@ -126,6 +128,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     // ==================================================
     // FIRESTORE LOAD
     // ==================================================
+    @SuppressLint("SetTextI18n")
     private void loadProductFromFirebase() {
 
         FirebaseFirestore.getInstance()
