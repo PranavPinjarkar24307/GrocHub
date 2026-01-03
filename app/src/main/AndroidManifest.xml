@@ -29,6 +29,11 @@
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.GrocHub">
+        <activity android:name=".CheckoutActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false" />
         <activity
             android:name=".NumberEnterVerification"
             android:exported="false" />
@@ -40,9 +45,6 @@
             android:exported="false" />
         <activity
             android:name=".SearchActivity"
-            android:exported="false" />
-        <activity
-            android:name=".SearchResultActivity"
             android:exported="false" />
         <activity
             android:name=".ProductDetailActivity"
