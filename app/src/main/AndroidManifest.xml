@@ -29,6 +29,8 @@
         android:roundIcon="@drawable/app_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.GrocHub">
+        <activity android:name=".OrderSuccessActivity"
+            android:exported="false" />
         <activity android:name=".CheckoutActivity"
             android:exported="false" />
         <activity
