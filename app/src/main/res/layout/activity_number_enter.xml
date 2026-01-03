@@ -59,7 +59,7 @@
                             android:layout_marginBottom="8dp"
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
-                            android:text="Add your contact number" />
+                            android:text="Enter your contact number" />
 
                         <TextView
                             android:textColor="#5A5E60"

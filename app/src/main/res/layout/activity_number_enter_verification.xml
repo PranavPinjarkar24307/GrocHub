@@ -132,7 +132,7 @@
                                 android:textColor="#FFFFFF"
                                 android:textSize="18sp"
                                 android:layout_height="wrap_content"
-                                android:layout_width="40dp"
+                                android:layout_width="38dp"
                                 android:gravity="center"
                                 android:text="Next" />
                         </LinearLayout>

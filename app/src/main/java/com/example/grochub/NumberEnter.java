@@ -23,12 +23,16 @@ public class NumberEnter extends AppCompatActivity {
         etPhone = findViewById(R.id.et_phone_number);
         btnNext = findViewById(R.id.btn_next);
 
-        // Skip if user is already verified
-        if (FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() != null) {
+        // ⭐ DISABLED FOR TESTING:
+        // If you want to force number entry testing, keep this commented out.
+        // Uncomment it later when the app is ready for production.
+
+        /* if (FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() != null) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
             return;
         }
+        */
 
         btnNext.setOnClickListener(v -> {
             String number = etPhone.getText().toString().trim();
@@ -38,8 +42,7 @@ public class NumberEnter extends AppCompatActivity {
                 return;
             }
 
-            // ⭐ FIX: Force +91 for India
-            // If the user didn't type +, add +91
+            // Force +91 for India
             String fullNumber;
             if (!number.startsWith("+")) {
                 fullNumber = "+91" + number;
