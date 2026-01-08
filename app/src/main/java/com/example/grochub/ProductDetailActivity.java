@@ -1,7 +1,7 @@
 package com.example.grochub;
 
 import android.annotation.SuppressLint;
-import android.content.Intent; // Required for Intent
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -18,21 +18,23 @@ import com.example.grochub.util.CartManager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList; // Required for ArrayList
+import java.util.ArrayList;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
+    // ================= UI =================
     private ImageView ivProductImage, ivBack, ivWishlist;
     private TextView tvName, tvPrice, tvUnit, tvDescription, tvQty;
-    // 🔥 Added btnBuyNow
     private TextView btnQtyMinus, btnQtyPlus, btnAddToCart, btnBuyNow;
 
-    private int quantity = 1;
-
-    private String imageUrl;
+    // ================= PRODUCT DATA =================
     private String productId;
+    private String imageUrl;
     private String productUnit;
+    private String productCategory;
+    private String productType;
 
+    private int quantity = 1;
     private long normalPrice = 0;
     private long specialPrice = 0;
 
@@ -55,13 +57,11 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnQtyMinus = findViewById(R.id.btn_qty_minus);
         btnQtyPlus = findViewById(R.id.btn_qty_plus);
         btnAddToCart = findViewById(R.id.btn_add_to_cart);
-
-        // 🔥 FIXED: Bind Buy Now Button
         btnBuyNow = findViewById(R.id.btn_buy_now);
 
         tvQty.setText(String.valueOf(quantity));
 
-        // ================= GET PRODUCT ID =================
+        // ================= LOAD PRODUCT =================
         productId = getIntent().getStringExtra("product_id");
 
         if (productId == null || productId.isEmpty()) {
@@ -70,7 +70,7 @@ public class ProductDetailActivity extends AppCompatActivity {
             loadProductFromFirebase();
         }
 
-        // Listeners
+        // ================= LISTENERS =================
         ivBack.setOnClickListener(v -> onBackPressed());
         ivWishlist.setOnClickListener(v -> toggleWishlist());
 
@@ -87,54 +87,46 @@ public class ProductDetailActivity extends AppCompatActivity {
         });
 
         btnAddToCart.setOnClickListener(v -> addToCart());
-
-        // 🔥 FIXED: Add Click Listener for Buy Now
         btnBuyNow.setOnClickListener(v -> buyNowProcess());
     }
 
     // ==================================================
-    // 🔥 NEW: BUY NOW LOGIC
+    // BUY NOW
     // ==================================================
     private void buyNowProcess() {
+
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, Loginpage.class));
             return;
         }
 
-        // 1. Calculate Price
         long currentPrice = (specialPrice > 0) ? specialPrice : normalPrice;
-        long totalAmt = currentPrice * quantity;
+        long totalAmount = currentPrice * quantity;
 
-        // 2. Create Single Item List for Checkout
-        CartFirebaseModel singleItem = new CartFirebaseModel(
+        CartFirebaseModel item = new CartFirebaseModel(
                 tvName.getText().toString(),
-                "₹" + currentPrice, // Price formatted as string
+                "₹" + currentPrice,
                 imageUrl,
                 quantity
         );
 
         ArrayList<CartFirebaseModel> items = new ArrayList<>();
-        items.add(singleItem);
+        items.add(item);
 
-        // 3. Open Checkout Activity
         Intent intent = new Intent(this, CheckoutActivity.class);
-        intent.putParcelableArrayListExtra("orderItems", items); // Passing the list
-        intent.putExtra("totalAmount", totalAmt); // Passing total price
-        intent.putExtra("fromCart", false); // Important: Don't delete cart after this order
+        intent.putParcelableArrayListExtra("orderItems", items);
+        intent.putExtra("totalAmount", totalAmount);
+        intent.putExtra("fromCart", false);
         startActivity(intent);
     }
 
-    // ... (Keep existing methods: getSafeProductId, loadOldFlowProduct, loadProductFromFirebase, etc.) ...
-
-    private String getSafeProductId() {
-        return (productId != null && !productId.isEmpty())
-                ? productId
-                : tvName.getText().toString().toLowerCase().replace(" ", "_");
-    }
-
+    // ==================================================
+    // LOAD OLD FLOW PRODUCT
+    // ==================================================
     @SuppressLint("SetTextI18n")
     private void loadOldFlowProduct() {
+
         String name = getIntent().getStringExtra("product_name");
         long price = getIntent().getLongExtra("product_price", -1);
         imageUrl = getIntent().getStringExtra("product_image");
@@ -146,25 +138,45 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         normalPrice = price;
-        specialPrice = 0;
+        productCategory = "General";
+        productType = "Standard Product";
 
         tvName.setText(name);
         tvPrice.setText("₹" + price);
         tvUnit.setVisibility(View.GONE);
-        tvDescription.setText(buildProductDescription(name, null, normalPrice, specialPrice));
+
+        tvDescription.setText(
+                generateProductDescription(
+                        name,
+                        productCategory,
+                        productType,
+                        null,
+                        price
+                )
+        );
+
         loadImage(imageUrl);
         checkWishlistState();
     }
 
+    // ==================================================
+    // LOAD PRODUCT FROM FIREBASE
+    // ==================================================
     @SuppressLint("SetTextI18n")
     private void loadProductFromFirebase() {
+
         FirebaseFirestore.getInstance()
                 .collection("products")
                 .document(productId)
                 .get()
                 .addOnSuccessListener(doc -> {
+
                     if (!doc.exists()) return;
+
                     String name = doc.getString("name");
+                    productCategory = doc.getString("category");
+                    productType = doc.getString("type");
+
                     Long np = doc.getLong("price");
                     Long sp = doc.getLong("specialPrice");
 
@@ -184,19 +196,39 @@ public class ProductDetailActivity extends AppCompatActivity {
                     } else {
                         tvUnit.setVisibility(View.GONE);
                     }
-                    tvDescription.setText(buildProductDescription(name, productUnit, normalPrice, specialPrice));
+
+                    tvDescription.setText(
+                            generateProductDescription(
+                                    name,
+                                    productCategory,
+                                    productType,
+                                    productUnit,
+                                    displayPrice
+                            )
+                    );
+
                     loadImage(imageUrl);
                     checkWishlistState();
                 });
     }
 
+    // ==================================================
+    // IMAGE
+    // ==================================================
     private void loadImage(String imageUrl) {
         if (imageUrl != null && !imageUrl.isEmpty()) {
-            Glide.with(this).load(imageUrl).placeholder(R.drawable.gray_colour).into(ivProductImage);
+            Glide.with(this)
+                    .load(imageUrl)
+                    .placeholder(R.drawable.gray_colour)
+                    .into(ivProductImage);
         }
     }
 
+    // ==================================================
+    // CART
+    // ==================================================
     private void addToCart() {
+
         if (FirebaseAuth.getInstance().getCurrentUser() == null) return;
 
         CartItem cartItem = new CartItem(
@@ -207,6 +239,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         );
 
         CartManager.addToCart(this, cartItem);
+
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         FirebaseFirestore.getInstance()
@@ -220,48 +253,147 @@ public class ProductDetailActivity extends AppCompatActivity {
                         imageUrl,
                         quantity
                 ));
+
         Toast.makeText(this, "Added to Cart", Toast.LENGTH_SHORT).show();
     }
 
+    private String getSafeProductId() {
+        return (productId != null && !productId.isEmpty())
+                ? productId
+                : tvName.getText().toString().toLowerCase().replace(" ", "_");
+    }
+
+    // ==================================================
+    // WISHLIST
+    // ==================================================
     private void checkWishlistState() {
+
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             ivWishlist.setImageResource(R.drawable.wishlisticon);
             return;
         }
+
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        FirebaseFirestore.getInstance().collection("users").document(uid).collection("wishlist").document(getSafeProductId())
-                .get().addOnSuccessListener(doc -> ivWishlist.setImageResource(doc.exists() ? R.drawable.hearticon : R.drawable.wishlisticon));
+
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .collection("wishlist")
+                .document(getSafeProductId())
+                .get()
+                .addOnSuccessListener(doc ->
+                        ivWishlist.setImageResource(
+                                doc.exists() ? R.drawable.hearticon : R.drawable.wishlisticon
+                        ));
     }
 
     private void toggleWishlist() {
+
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             Toast.makeText(this, "Login required", Toast.LENGTH_SHORT).show();
             return;
         }
+
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
         String pid = getSafeProductId();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("users").document(uid).collection("wishlist").document(pid).get()
+        db.collection("users").document(uid)
+                .collection("wishlist")
+                .document(pid)
+                .get()
                 .addOnSuccessListener(doc -> {
                     if (doc.exists()) {
-                        db.collection("users").document(uid).collection("wishlist").document(pid).delete();
+                        db.collection("users").document(uid)
+                                .collection("wishlist").document(pid).delete();
                         ivWishlist.setImageResource(R.drawable.wishlisticon);
                     } else {
-                        db.collection("users").document(uid).collection("wishlist").document(pid)
-                                .set(new WishlistItem(pid, tvName.getText().toString(), normalPrice, specialPrice, productUnit, imageUrl));
+                        db.collection("users").document(uid)
+                                .collection("wishlist").document(pid)
+                                .set(new WishlistItem(
+                                        pid,
+                                        tvName.getText().toString(),
+                                        normalPrice,
+                                        specialPrice,
+                                        productUnit,
+                                        imageUrl
+                                ));
                         ivWishlist.setImageResource(R.drawable.hearticon);
                     }
                 });
     }
 
-    private String buildProductDescription(String name, String unit, long normalPrice, long specialPrice) {
-        StringBuilder desc = new StringBuilder();
-        desc.append(name).append(" is a premium quality product, carefully selected and packed to ensure freshness.\n\n");
-        if (unit != null && !unit.isEmpty()) desc.append("• Pack Size: ").append(unit).append("\n");
-        if (specialPrice > 0) desc.append("• Special Offer Price: ₹").append(specialPrice).append("\n");
-        else desc.append("• Price: ₹").append(normalPrice).append("\n");
-        desc.append("\nOrder now for fast delivery.");
-        return desc.toString();
+    // ==================================================
+    // DESCRIPTION GENERATOR (FINAL)
+    // ==================================================
+    private String generateProductDescription(
+            String name,
+            String category,
+            String type,
+            String unit,
+            long price
+    ) {
+
+        if (category == null) category = "General";
+        if (type == null) type = "Standard";
+
+        return "Category: " + category + "\n" +
+                "Product Type: " + type + "\n\n" +
+
+                name + " is a high-quality product carefully selected to meet everyday household needs. " +
+                "It belongs to the " + category.toLowerCase() + " category and is known for its freshness, consistency, and reliability.\n\n" +
+
+                "Usage & Benefits:\n" +
+                getUsageInfo(category) + "\n\n" +
+
+                "Quality Assurance:\n" +
+                "✔ Premium quality\n" +
+                "✔ Hygienically packed\n" +
+                "✔ Suitable for daily use\n" +
+                "✔ Best value for money\n\n" +
+
+                "Storage Instructions:\n" +
+                getStorageInfo(category) + "\n\n" +
+
+                "Price & Value:\n" +
+                "₹" + price + " per " + (unit != null ? unit : "unit") + "\n\n" +
+
+                "Net Quantity: As per selected unit";
+    }
+
+    private String getUsageInfo(String category) {
+
+        switch (category.toLowerCase()) {
+            case "vegetables":
+            case "fruits":
+                return "Ideal for daily cooking, salads, juices, and fresh recipes.";
+            case "dairy":
+                return "Perfect for beverages, cooking, and direct consumption.";
+            case "bakery":
+                return "Suitable for breakfast, snacks, and quick meals.";
+            case "snacks":
+            case "packaged food":
+                return "Great for quick snacking and on-the-go consumption.";
+            default:
+                return "Suitable for regular household use.";
+        }
+    }
+
+    private String getStorageInfo(String category) {
+
+        switch (category.toLowerCase()) {
+            case "vegetables":
+            case "fruits":
+                return "Store in a cool, dry place. Refrigerate for longer freshness.";
+            case "dairy":
+                return "Keep refrigerated. Consume before expiry.";
+            case "bakery":
+                return "Store in a cool, dry place.";
+            case "snacks":
+            case "packaged food":
+                return "Store away from heat and sunlight.";
+            default:
+                return "Store as per package instructions.";
+        }
     }
 }

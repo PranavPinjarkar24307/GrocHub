@@ -145,17 +145,12 @@ public class HomeFragment extends Fragment {
 
                 if (dots == null) return;
 
-                // Reset all dots to default state
                 for (int i = 0; i < dots.length; i++) {
-                    dots[i].setImageResource(R.drawable.dot);
-                    animateDot(dots[i], false);
+                    deactivateDot(dots[i]);
                 }
 
-                // Highlight current dot
-                dots[position].setImageResource(R.drawable.dot_selected);
-                animateDot(dots[position], true);
+                activateDot(position);
 
-                // Reset auto-slide timer so it doesn't jump immediately after user swipe
                 sliderHandler.removeCallbacks(sliderRunnable);
                 sliderHandler.postDelayed(sliderRunnable, 3000);
             }
@@ -172,23 +167,25 @@ public class HomeFragment extends Fragment {
         dots = new ImageView[count];
 
         for (int i = 0; i < count; i++) {
-            dots[i] = new ImageView(getContext());
-            dots[i].setImageResource(R.drawable.dot);
+            ImageView dot = new ImageView(getContext());
+            dot.setImageResource(R.drawable.dot);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(8, 0, 8, 0);
-            sliderDots.addView(dots[i], params);
+            params.setMargins(10, 0, 10, 0);
+
+            dot.setAlpha(0.4f);
+            sliderDots.addView(dot, params);
+            dots[i] = dot;
         }
 
-        // Highlight the first dot initially
         if (count > 0) {
-            dots[0].setImageResource(R.drawable.dot_selected);
-            animateDot(dots[0], true);
+            activateDot(0);
         }
     }
+
 
     private void loadHomeSliders() {
         db.collection("home_sliders")
@@ -239,6 +236,26 @@ public class HomeFragment extends Fragment {
                 .setDuration(250)
                 .start();
     }
+
+    private void activateDot(int index) {
+        ImageView dot = dots[index];
+        dot.setImageResource(R.drawable.dot_selected);
+
+        dot.animate()
+                .alpha(1f)
+                .setDuration(200)
+                .start();
+    }
+
+    private void deactivateDot(ImageView dot) {
+        dot.setImageResource(R.drawable.dot);
+
+        dot.animate()
+                .alpha(0.4f)
+                .setDuration(200)
+                .start();
+    }
+
 
     // ==========================================
     // FEATURE: SEARCH & CATEGORIES
