@@ -11,134 +11,95 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="#FFFFFF">
+        android:layout_weight="1">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:layout_marginTop="93dp">
 
-            <LinearLayout
+            <ImageView
+                android:id="@+id/r4ydvwq8ilww"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/back_button_trasparent"
+                android:scaleType="fitXY"
+                android:layout_marginBottom="24dp"/>
+
+            <TextView
+                android:textColor="#12110D"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Enter the Code" />
+
+            <TextView
+                android:textColor="#5A5E60"
+                android:textSize="16sp"
+                android:layout_marginBottom="4dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="A verification code has been sent to" />
+
+            <TextView
+                android:id="@+id/r56362criajk"
+                android:textColor="#12110D"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="32dp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="+91 000 000 0000" />
+
+            <EditText
+                android:id="@+id/et_code_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="20dp"
-                android:layout_marginTop="93dp"
-                android:layout_marginBottom="48dp"
-                android:orientation="vertical">
+                android:hint="0 0 0 0 0 0"
+                android:inputType="number"
+                android:gravity="center"
+                android:maxLength="6"
+                android:letterSpacing="0.4"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:background="@android:color/transparent"
+                android:paddingVertical="15dp"
+                android:layout_marginBottom="20dp"/>
 
-                <LinearLayout
+            <TextView
+                android:id="@+id/tv_timer"
+                android:textColor="#12110D"
+                android:textSize="16sp"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Resend code in 60s"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="25dp" />
+
+            <LinearLayout
+                android:id="@+id/r9p525jbg3i7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:background="@drawable/add_to_cart_bg"
+                android:paddingVertical="14dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:id="@+id/btn_next_text"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:layout_marginBottom="24dp"
-                    android:orientation="vertical">
-
-                    <ImageView
-                        android:id="@+id/r4ydvwq8ilww"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:background="@drawable/back_button_trasparent"
-                        android:scaleType="fitXY" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="32dp"
-                        android:orientation="vertical">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginBottom="32dp"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:textColor="#12110D"
-                                android:textSize="22sp"
-                                android:textStyle="bold"
-                                android:layout_marginBottom="8dp"
-                                android:layout_height="wrap_content"
-                                android:layout_width="wrap_content"
-                                android:text="Enter the Code" />
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:paddingBottom="5dp"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:textColor="#5A5E60"
-                                    android:textSize="16sp"
-                                    android:layout_marginBottom="11dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:text="A verification code has been sent to" />
-
-                                <TextView
-                                    android:id="@+id/r56362criajk"
-                                    android:textColor="#12110D"
-                                    android:textSize="16sp"
-                                    android:textStyle="bold"
-                                    android:layout_marginStart="1dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_width="wrap_content"
-                                    android:text="+91 000 000 0000" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                        <EditText
-                            android:id="@+id/et_code_input"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Enter 6-digit SMS code"
-                            android:inputType="number"
-                            android:gravity="center"
-                            android:maxLength="6"
-                            android:letterSpacing="0.2"
-                            android:textSize="24sp"
-                            android:background="@android:color/transparent"
-                            android:paddingVertical="15dp"
-                            android:layout_marginBottom="20dp"/>
-
-                        <TextView
-                            android:textColor="#12110D"
-                            android:textSize="18sp"
-                            android:layout_height="wrap_content"
-                            android:layout_width="wrap_content"
-                            android:text="You can resend the code in 24 seconds"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginBottom="15dp" />
-
-                        <LinearLayout
-                            android:id="@+id/r9p525jbg3i7"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_horizontal"
-                            android:background="@drawable/add_to_cart_bg"
-                            android:paddingVertical="14dp"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:textColor="#FFFFFF"
-                                android:textSize="18sp"
-                                android:layout_height="wrap_content"
-                                android:layout_width="38dp"
-                                android:gravity="center"
-                                android:text="Next" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </LinearLayout>
+                    android:text="Next" />
             </LinearLayout>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

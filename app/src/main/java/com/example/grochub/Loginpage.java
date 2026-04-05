@@ -97,38 +97,33 @@ public class Loginpage extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
-        String uid = user.getUid();
-
-        // Check FIRESTORE specifically for the 'phone' field
         FirebaseFirestore.getInstance()
                 .collection("users")
-                .document(uid)
+                .document(user.getUid())
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
-
-                    // 1. Check if user document exists
-                    // 2. Check if 'phone' field exists and is not empty
-                    boolean hasPhoneInDb = documentSnapshot.exists()
+                    // We check the 'phone' field we saved in Firestore
+                    boolean hasPhone = documentSnapshot.exists()
                             && documentSnapshot.contains("phone")
                             && documentSnapshot.getString("phone") != null
                             && !documentSnapshot.getString("phone").isEmpty();
 
-                    if (hasPhoneInDb) {
-                        // Phone verified & Saved -> Go to Main
-                        Intent intent = new Intent(Loginpage.this, MainActivity.class);
+                    if (hasPhone) {
+                        // Verified -> Go to Main
+                        Intent intent = new Intent(this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
-                        finish();
                     } else {
-                        // Phone missing -> Go to Verification
-                        Intent intent = new Intent(Loginpage.this, NumberEnter.class);
-                        // intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Optional: prevents back button
+                        // Missing Phone -> Go to Verification
+                        Intent intent = new Intent(this, NumberEnter.class);
                         startActivity(intent);
-                        finish();
                     }
+                    finish();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(Loginpage.this, "Error checking profile: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    // If DB check fails, default to safety (Verification screen)
+                    startActivity(new Intent(this, NumberEnter.class));
+                    finish();
                 });
     }
 }

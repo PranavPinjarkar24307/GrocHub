@@ -150,8 +150,10 @@ public class RegisterPagePassword extends AppCompatActivity {
     }
 
     private void navigateToHome() {
-        Intent intent = new Intent(this, MainActivity.class);
+        // Send to NumberEnter, NOT MainActivity
+        Intent intent = new Intent(this, NumberEnter.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+        finish();
     }
 }
