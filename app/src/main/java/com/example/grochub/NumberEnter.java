@@ -34,6 +34,19 @@ public class NumberEnter extends AppCompatActivity {
         }
         */
 
+        // Inside onCreate of NumberEnter.java
+        getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // If they back out, sign them out so they aren't stuck in a half-logged-in state
+                FirebaseAuth.getInstance().signOut();
+                Intent intent = new Intent(NumberEnter.this, WelcomePage.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+
         btnNext.setOnClickListener(v -> {
             String number = etPhone.getText().toString().trim();
 

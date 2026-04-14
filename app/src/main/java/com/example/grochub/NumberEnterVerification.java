@@ -165,7 +165,21 @@ public class NumberEnterVerification extends AppCompatActivity {
                 @Override
                 public void onVerificationFailed(@NonNull FirebaseException e) {
                     setInProgress(false);
-                    Toast.makeText(NumberEnterVerification.this, "Error: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    Log.e("PhoneAuthError", "Failed", e);
+
+                    if (e instanceof com.google.firebase.auth.FirebaseAuthException) {
+                        String errorCode = ((com.google.firebase.auth.FirebaseAuthException) e).getErrorCode();
+
+                        if (errorCode.equals("ERROR_TOO_MANY_REQUESTS")) {
+                            Toast.makeText(NumberEnterVerification.this,
+                                    "This device is temporarily blocked due to too many attempts. Please try again in 24 hours.",
+                                    Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(NumberEnterVerification.this, "Verification Failed: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Toast.makeText(NumberEnterVerification.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override
