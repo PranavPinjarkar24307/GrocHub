@@ -123,14 +123,16 @@
             android:background="@drawable/sbdbdbdsw1cr10"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingVertical="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Google"
-                android:textColor="#4F4F4F"
-                android:textSize="14sp" />
+            android:paddingVertical="12dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"> <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Continue with Google"
+            android:textColor="#4F4F4F"
+            android:textStyle="bold"
+            android:textSize="16sp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

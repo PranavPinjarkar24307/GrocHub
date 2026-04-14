@@ -35,19 +35,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/iv_settings"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_marginEnd="24dp"
-                android:padding="8dp"
-                android:background="@drawable/circle_white_alpha"
-                android:src="@drawable/setting"
-                app:tint="@color/white"
-                app:layout_constraintBottom_toBottomOf="@id/tv_profile_title"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv_profile_title" />
-
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_user"
                 android:layout_width="match_parent"
@@ -105,10 +92,23 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Account Settings"
+                    android:text="Security &amp; Account"
                     android:textColor="#888888"
                     android:textStyle="bold"
                     android:textSize="12sp"
+                    android:layout_marginBottom="12dp"
+                    android:textAllCaps="true"/>
+
+                <include layout="@layout/item_profile_menu" android:id="@+id/change_password_include" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="App Settings"
+                    android:textColor="#888888"
+                    android:textStyle="bold"
+                    android:textSize="12sp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginBottom="12dp"
                     android:textAllCaps="true"/>
 

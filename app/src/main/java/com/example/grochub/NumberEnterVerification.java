@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.FirebaseException;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
@@ -42,6 +43,7 @@ public class NumberEnterVerification extends AppCompatActivity {
 
     private CountDownTimer countDownTimer;
     private boolean canResend = false;
+    private boolean isVerifying = false; // ⭐ Safety Flag
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +54,6 @@ public class NumberEnterVerification extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         phoneNumber = getIntent().getStringExtra("phonenumber");
 
-        // UI Bindings
         tvDisplayNumber = findViewById(R.id.r56362criajk);
         etCodeInput = findViewById(R.id.et_code_input);
         btnVerify = findViewById(R.id.r9p525jbg3i7);
@@ -61,15 +62,15 @@ public class NumberEnterVerification extends AppCompatActivity {
 
         formatDisplayNumber();
         setupAutoSubmit();
-
-        // Initial OTP Send
         sendVerificationCode(phoneNumber, false);
 
-        // Click Listeners
         btnVerify.setOnClickListener(v -> handleManualVerify());
-        findViewById(R.id.r4ydvwq8ilww).setOnClickListener(v -> finish());
 
-        // Resend logic when clicking the timer text after 60s
+        findViewById(R.id.r4ydvwq8ilww).setOnClickListener(v -> {
+            mAuth.signOut();
+            finish();
+        });
+
         tvTimer.setOnClickListener(v -> {
             if (canResend) {
                 sendVerificationCode(phoneNumber, true);
@@ -111,7 +112,7 @@ public class NumberEnterVerification extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() == 6) {
+                if (s.length() == 6 && !isVerifying) {
                     verifyCode(s.toString());
                 }
             }
@@ -126,10 +127,11 @@ public class NumberEnterVerification extends AppCompatActivity {
             Toast.makeText(this, "Enter 6 digits", Toast.LENGTH_SHORT).show();
             return;
         }
-        verifyCode(code);
+        if (!isVerifying) verifyCode(code);
     }
 
     private void setInProgress(boolean loading) {
+        isVerifying = loading;
         btnVerify.setEnabled(!loading);
         btnText.setText(loading ? "Verifying..." : "Next");
         btnVerify.setAlpha(loading ? 0.5f : 1.0f);
@@ -148,7 +150,7 @@ public class NumberEnterVerification extends AppCompatActivity {
         }
 
         PhoneAuthProvider.verifyPhoneNumber(optionsBuilder.build());
-        startResendTimer(); // Reset timer on every send attempt
+        startResendTimer();
     }
 
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks =
@@ -158,28 +160,14 @@ public class NumberEnterVerification extends AppCompatActivity {
                     String code = credential.getSmsCode();
                     if (code != null) {
                         etCodeInput.setText(code);
-                        verifyCode(code);
+                        if (!isVerifying) verifyCode(code);
                     }
                 }
 
                 @Override
                 public void onVerificationFailed(@NonNull FirebaseException e) {
                     setInProgress(false);
-                    Log.e("PhoneAuthError", "Failed", e);
-
-                    if (e instanceof com.google.firebase.auth.FirebaseAuthException) {
-                        String errorCode = ((com.google.firebase.auth.FirebaseAuthException) e).getErrorCode();
-
-                        if (errorCode.equals("ERROR_TOO_MANY_REQUESTS")) {
-                            Toast.makeText(NumberEnterVerification.this,
-                                    "This device is temporarily blocked due to too many attempts. Please try again in 24 hours.",
-                                    Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(NumberEnterVerification.this, "Verification Failed: " + e.getLocalizedMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Toast.makeText(NumberEnterVerification.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(NumberEnterVerification.this, "Error: " + e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -191,7 +179,7 @@ public class NumberEnterVerification extends AppCompatActivity {
             };
 
     private void verifyCode(String code) {
-        if (mVerificationId == null) return;
+        if (mVerificationId == null || isVerifying) return;
         setInProgress(true);
         PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, code);
         linkPhoneWithAccount(credential);
@@ -199,17 +187,26 @@ public class NumberEnterVerification extends AppCompatActivity {
 
     private void linkPhoneWithAccount(PhoneAuthCredential credential) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            currentUser.linkWithCredential(credential)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
+        if (currentUser == null) {
+            setInProgress(false);
+            return;
+        }
+
+        currentUser.linkWithCredential(credential)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        savePhoneToFirestore(currentUser.getUid());
+                    } else {
+                        // ⭐ CRITICAL FIX: Handle if phone is already used by another account
+                        if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                            Log.w("OTP", "Collision detected, overriding with Firestore update.");
                             savePhoneToFirestore(currentUser.getUid());
                         } else {
                             setInProgress(false);
-                            Toast.makeText(this, "Verification failed. Try again.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Verification failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                    });
-        }
+                    }
+                });
     }
 
     private void savePhoneToFirestore(String uid) {
@@ -219,6 +216,9 @@ public class NumberEnterVerification extends AppCompatActivity {
         firestore.collection("users").document(uid)
                 .set(data, SetOptions.merge())
                 .addOnSuccessListener(aVoid -> {
+                    PreferenceManager prefManager = new PreferenceManager(this);
+                    prefManager.setPhoneVerifiedLocally(true);
+
                     Toast.makeText(this, "Verification Successful!", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -227,9 +227,7 @@ public class NumberEnterVerification extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> {
                     setInProgress(false);
-                    // Still move to main as Auth was successful, but log the DB error
-                    startActivity(new Intent(this, MainActivity.class));
-                    finish();
+                    Toast.makeText(this, "Database error. Please try again.", Toast.LENGTH_SHORT).show();
                 });
     }
 

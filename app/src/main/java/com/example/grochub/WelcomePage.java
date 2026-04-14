@@ -1,8 +1,8 @@
 package com.example.grochub;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ public class WelcomePage extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private GoogleSignInClient googleSignInClient;
     private FirebaseFirestore firestore;
+    private ProgressDialog progressDialog;
     private static final int RC_GOOGLE_SIGN_IN = 101;
 
     @Override
@@ -39,11 +41,14 @@ public class WelcomePage extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         firestore = FirebaseFirestore.getInstance();
 
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Syncing with Google...");
+        progressDialog.setCancelable(false);
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
-
         googleSignInClient = GoogleSignIn.getClient(this, gso);
 
         loginButtonContainer = findViewById(R.id.btn_login_container);
@@ -52,7 +57,9 @@ public class WelcomePage extends AppCompatActivity {
 
         loginButtonContainer.setOnClickListener(v -> startActivity(new Intent(this, Loginpage.class)));
         registerButtonContainer.setOnClickListener(v -> startActivity(new Intent(this, Registerpage.class)));
+
         googleButton.setOnClickListener(v -> {
+            progressDialog.show();
             Intent signInIntent = googleSignInClient.getSignInIntent();
             startActivityForResult(signInIntent, RC_GOOGLE_SIGN_IN);
         });
@@ -61,9 +68,7 @@ public class WelcomePage extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null) {
-            // Only run the check if Firebase says a user is actually logged in
+        if (firebaseAuth.getCurrentUser() != null && !progressDialog.isShowing()) {
             checkUserAndRedirect();
         }
     }
@@ -72,13 +77,21 @@ public class WelcomePage extends AppCompatActivity {
         FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user == null) return;
 
+        PreferenceManager prefManager = new PreferenceManager(this);
+
+        // ⭐ MANDATORY LOCAL CHECK (Fails after Uninstall/Clear Data)
+        if (!prefManager.isPhoneVerifiedLocally()) {
+            startActivity(new Intent(this, NumberEnter.class));
+            finish();
+            return;
+        }
+
         firestore.collection("users").document(user.getUid()).get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    boolean hasPhone = documentSnapshot.exists()
-                            && documentSnapshot.getString("phone") != null
-                            && !documentSnapshot.getString("phone").isEmpty();
+                    if (progressDialog.isShowing()) progressDialog.dismiss();
 
-                    if (hasPhone) {
+                    String phone = documentSnapshot.getString("phone");
+                    if (documentSnapshot.exists() && phone != null && !phone.trim().isEmpty()) {
                         Intent intent = new Intent(this, MainActivity.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
@@ -88,7 +101,7 @@ public class WelcomePage extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> {
-                    // Fallback to verification on DB error
+                    if (progressDialog.isShowing()) progressDialog.dismiss();
                     startActivity(new Intent(this, NumberEnter.class));
                     finish();
                 });
@@ -103,6 +116,7 @@ public class WelcomePage extends AppCompatActivity {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account.getIdToken());
             } catch (ApiException e) {
+                progressDialog.dismiss();
                 Toast.makeText(this, "Sign-In Failed", Toast.LENGTH_SHORT).show();
             }
         }
@@ -111,11 +125,11 @@ public class WelcomePage extends AppCompatActivity {
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         firebaseAuth.signInWithCredential(credential)
-                .addOnSuccessListener(authResult -> {
-                    FirebaseUser user = firebaseAuth.getCurrentUser();
-                    saveUserToFirestore(user);
-                })
-                .addOnFailureListener(e -> Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnSuccessListener(authResult -> saveUserToFirestore(firebaseAuth.getCurrentUser()))
+                .addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void saveUserToFirestore(FirebaseUser user) {

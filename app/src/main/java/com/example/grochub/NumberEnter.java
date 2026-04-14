@@ -23,51 +23,39 @@ public class NumberEnter extends AppCompatActivity {
         etPhone = findViewById(R.id.et_phone_number);
         btnNext = findViewById(R.id.btn_next);
 
-        // ⭐ DISABLED FOR TESTING:
-        // If you want to force number entry testing, keep this commented out.
-        // Uncomment it later when the app is ready for production.
+        // Back behavior
+        findViewById(R.id.iv_back).setOnClickListener(v -> handleExit());
 
-        /* if (FirebaseAuth.getInstance().getCurrentUser().getPhoneNumber() != null) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-            return;
-        }
-        */
-
-        // Inside onCreate of NumberEnter.java
         getOnBackPressedDispatcher().addCallback(this, new androidx.activity.OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // If they back out, sign them out so they aren't stuck in a half-logged-in state
-                FirebaseAuth.getInstance().signOut();
-                Intent intent = new Intent(NumberEnter.this, WelcomePage.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-                finish();
+                handleExit();
             }
         });
 
         btnNext.setOnClickListener(v -> {
             String number = etPhone.getText().toString().trim();
 
-            if (number.isEmpty() || number.length() < 10) {
-                etPhone.setError("Enter a valid 10-digit number");
+            if (number.length() != 10) {
+                etPhone.setError("Please enter a valid 10-digit number");
                 return;
             }
 
-            // Force +91 for India
-            String fullNumber;
-            if (!number.startsWith("+")) {
-                fullNumber = "+91" + number;
-            } else {
-                fullNumber = number;
-            }
+            // UI has static +91, so we just append it here
+            String fullNumber = "+91" + number;
 
             Intent intent = new Intent(NumberEnter.this, NumberEnterVerification.class);
             intent.putExtra("phonenumber", fullNumber);
             startActivity(intent);
         });
+    }
 
-        findViewById(R.id.iv_back).setOnClickListener(v -> finish());
+    private void handleExit() {
+        // If user backs out of phone entry, sign them out to prevent unfinished profile state
+        FirebaseAuth.getInstance().signOut();
+        Intent intent = new Intent(this, WelcomePage.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 }
