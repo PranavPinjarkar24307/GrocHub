@@ -87,7 +87,7 @@
                             <EditText
                                 android:id="@+id/et_phone_number"
                                 android:inputType="phone"
-                                android:hint="(000) 000-0000"
+                                android:hint="0000000000"
                                 android:background="@null"
                                 android:textColor="@color/black"
                                 android:textSize="18sp"
